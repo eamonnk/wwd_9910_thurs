@@ -1,0 +1,54 @@
+---
+title: "Converted from IPYNB"
+output: html_notebook
+---
+
+# Lab Week 3
+
+1.  Using `read.table`, Load the file `shopping.tsv`. into R. `shopping.tsv` is a tab-separated file. Ensure column names are interpreted correctly, and missing values correctly inferred.
+
+```{r}
+
+```
+
+2.  Use `readr` to import the table, again ensuring column names and missing values correctly inferred.
+
+```{r}
+
+```
+
+3.  Import the first 50 rows of `jester-data.csv`. The jester dataset gives ratings given by human raters (columns) to individual jokes (represented by rows). Be aware that this file has no headers. Calculate the average rating of each joke. Tip: check the `t` function.
+
+```{r}
+
+```
+
+4.  Import the 51st to 100th rows of the jester dataset, and only the first 8 columns. Using R functions, calculate which rater gave the highest overall value of total ratings.
+
+```{r}
+
+```
+
+5.  Import the table from the website <https://www.skysports.com/champions-league-table>. Set the correct data type for each column.
+
+```{r}
+
+```
+
+6.  Save the table as an R object, and then as a comma separated file using the \| character as a colu separator.
+
+```{r}
+
+```
+
+7.  Download (using R) the following dataset <https://www3.stats.govt.nz/2018census/Occupied-dwellings-unoccupied-dwellings-dwellings-under-construction-private-and-non-private-dwellings-2006-2013-2018-Censuses-RC-TA-SA2-DHB.zip>. Extract all csv files to separate data frames
+
+```{r}
+
+```
+
+8.  Give each data frame a meaningful name. Save the objects to `.rdata` format
+
+```{r}
+
+```

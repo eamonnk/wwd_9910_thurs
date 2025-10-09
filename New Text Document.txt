@@ -1,0 +1,15 @@
+
+
+Week 1 >> 
+content = https://drive.google.com/drive/folders/1FlUlyncqCDS0dE_FJcR_9ICcGoVEnnS7
+lecture = 
+
+INSTAL R >>> https://cloud.r-project.org/
+others such as  www.r-project.org >> time otu don't htake HTTP requests... and don't connect
+
+week 2 >> https://drive.google.com/drive/folders/1ppV7kZa4eaizkwQfLWgsiteWLusTYOut
+
+
+week 3 >>
+
+https://drive.google.com/drive/folders/1xh7qRLwwxbEobf9EdmfjBY6Codr8F_5n?usp=sharing
