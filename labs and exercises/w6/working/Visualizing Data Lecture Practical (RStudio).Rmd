@@ -9,7 +9,7 @@ This notebook can be used to follow along with the practical examples from part 
 
 ```{r}
 # Uncomment the line below to install ggplot2 (if you haven't already).
-#install.packages('ggplot2')
+install.packages('ggplot2')
 library(ggplot2)
 
 # The mpg dataset is available by default in R, it has the variable name `mpg`
