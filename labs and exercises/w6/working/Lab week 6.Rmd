@@ -1,0 +1,150 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+# Lab Week
+
+## Summary Statistics
+
+### Wine dataset
+
+Import and parse the wine dataset from the UCI machine learning repository into R. You can browse the contents of the dataset at <https://archive.ics.uci.edu/static/public/109/wine.zip>. Make sure you add column names and the correct column type for each column.
+
+1.  Calculate the mean value for Alcohol.
+
+```{r}
+
+```
+
+2.  Calculate the median value for Malic Acid
+
+```{r}
+
+```
+
+3.  Calculate the five major percentile values for Flavanoids
+
+```{r}
+
+```
+
+4.  Calculate the 23rd Percentile for Proanthocyanins
+
+```{r}
+
+```
+
+5.  Calculate the mean value for all columns (this can be done as one liner)
+
+```{r}
+
+```
+
+For the questions below, you might want to use a for loop to work through each column. You can print the results to the console.
+
+6.  Calculate which column displays the greatest and least standard deviation
+
+```{r}
+
+```
+
+7.  Using the standard deviation calculation, work out each column’s variance (do not use the built-in R function)
+
+```{r}
+
+```
+
+8.  For each column, calculate the interquartile range
+
+```{r}
+
+```
+
+9.  For each column, calculate whether the distribution is left or right skewed
+
+```{r}
+
+```
+
+### Airquality dataset
+
+Load the airquality dataset which is available with the baseR package. (You can use the R data function to load built-in datasets).
+
+```{r}
+data <- airquality
+```
+
+1.  Calculate the total number of NAs in the Solar.R column.
+
+```{r}
+
+```
+
+2.  Calculate the total number of NAs in row 5
+
+```{r}
+
+```
+
+3.  Calculate the mean of the Ozone column (the answer is not NA!).
+
+```{r}
+
+```
+
+4.  Calculate the percentage of rows which contain at least 1 NA
+
+```{r}
+
+```
+
+5.  Calculate the total number of NAs for each column
+
+```{r}
+
+```
+
+## Graphs
+
+Load the USArrests dataset from baseR.
+
+```{r}
+data <- USArrests
+```
+
+1.  Choose an appropriate visualisation (or visualisations) to determine whether UrbanPop or Assault are a better predictor of murder
+
+```{r}
+
+```
+
+2.  Load the msleep dataset from baseR. Choose an appropriate visualisation to give a good summary of the spread of sleep patterns based on diet (the column vore). Plot this spread for each category of animal.
+
+```{r}
+
+```
+
+3.  Load the titanic dataset. This can be installed using `install.packages("titanic")` and loaded with the `library()` function. After that, the dataset you want is called `titanic_train`. Choose an appropriate visualisation to show the distribution of ages on the titanic dataset.
+
+```{r}
+
+```
+
+4.  Using the titanic dataset show how the likelihood of survival depends on gender and on class.
+
+```{r}
+
+```
+
+5.  Using the diamonds dataset, investigate the relationship between carat and price. Use two geoms on a single plot. Is it linear?
+
+```{r}
+
+```
+
+6.  Repeat the previous visualisation but show one graph for each different type of cut.
+
+```{r}
+
+```

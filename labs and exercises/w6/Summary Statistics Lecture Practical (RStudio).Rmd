@@ -1,0 +1,137 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+# Summary Statistics Lecture Practical
+
+This notebook can be used to follow along with the lecture notes.
+
+```{r}
+# Download the bank.zip file from brightspace
+url <- 'http://archive.ics.uci.edu/ml/machine-learning-databases/00222/bank.zip'
+download.file(url, destfile = 'bank.zip')
+unzip('bank.zip', list = T)
+```
+
+## Data Description
+
+### Numeric Data
+
+1.  age
+2.  balance
+3.  contact day
+4.  duration
+5.  campaign contacts
+6.  previous contacts
+7.  previous days (-1, no previous contact)
+
+### Categorical Data
+
+1.  job (11) { ’admin’, ’entrepreneur’. . . }
+2.  marital (3) { ’divorced’, ’married’, ’single’ }
+3.  education (3) { ’primary’, ’secondary’. . . }
+4.  default (2) { ’yes’, ’no’ }
+5.  housing loan (2) { ’yes’, ’no’ }
+6.  Personal loan (2) { ’yes’, ’no’ }
+7.  contact type (2) { ’telephone’, ’cellular’ }
+8.  contact month (12) { ’jan’, ’feb’. . . }
+9.  previous outcome (3) { ’success’, ’failure’. . . }
+10. subscribed (2) { ’yes’, ’no’ }
+
+## Task 1: Import the data into R
+
+Make sure you run the initial steps in the cell above to download and unzip the dataset. Then import the data into R, you may need to manually inspect the dataset to get an idea of the format. Save the dataframe in a variable called bankData.
+
+```{r}
+
+```
+
+## Task 2: Basic Checks
+
+Before we get to work on the dataframe we want to perform some basic checks. First, get an idea of the size of the dataset by checking the number of columns and rows. Then double check the first few and last few rows of the dataframe to make sure there were no problems with the import
+
+```{r}
+
+```
+
+## Task 3: Type Conversion
+
+By default, read_delim reads character columns as characters, but all of our character columns should be factors. Manually convert columns 2,3,4 and 5 to factors below
+
+```{r}
+
+```
+
+Or, use a loop to convert all factor columns
+
+```{r}
+
+```
+
+## Task 4: Finding NAs
+
+1.  How many NAs are there for the education attribute?
+2.  What percentage of the total is this?
+
+```{r}
+
+```
+
+## Finding NAs in all columns
+
+See the lecture notes for how to do this. Get a list of all columns containing at least 1 NA and find the counts of each
+
+```{r}
+
+```
+
+## Task 5: Finding the Average
+
+What is the average value of the following columns? 1. age 2. duration 3. pDays
+
+```{r}
+
+```
+
+## Fixing the pDays Column
+
+See the lecture notes for how to do this. Implement option 1 and option 2 in the cells below
+
+```{r}
+
+```
+
+## Task 6 - Omitting Rows Containing NA
+
+Create a copy of the dataset omitting any rows with NAs. How much data do we lose doing this? (express as a percentage of total rows)
+
+```{r}
+
+```
+
+
+## Task 7 - Calculating Quantiles
+
+1.  Use the first cell to write a script to find the tenth percentile of the following data.
+
+``` r
+c(14, 15, 9, 14, 8, 9, 6, 7, 8, 12)
+```
+
+2.  Then add in the script the code to find the 30th, 50th and 75th percentile
+3.  In the second cell, use the r **quantile()** function to calculate each of the percentiles above
+
+```{r}
+
+```
+
+### Task 8 - Calculate the Trimmed Mean
+
+1. Calculate the mean and median of the *balance* feature of our bankData dataframe
+2. Calculate the trimmed mean @ T = 0.1
+3. Show that the trimmed mean is more representative of the centre than the raw mean 
+
+```{r}
+
+```

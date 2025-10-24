@@ -1,0 +1,163 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+# Visualizing Data
+
+This notebook can be used to follow along with the practical examples from part 3 of this week's lecture. Before we begin make sure you've installed ggplot2. In these examples we'll be working with the *mpg* dataset. The mpg dataset deals with different makes and model of cars. The **hwy** column gives *highway miles per gallon*. This dataset is used to determine the factors that contribute to a car's miles per gallon
+
+```{r}
+# Uncomment the line below to install ggplot2 (if you haven't already).
+#install.packages('ggplot2')
+library(ggplot2)
+
+# The mpg dataset is available by default in R, it has the variable name `mpg`
+nrow(mpg)
+ncol(mpg)
+head(mpg)
+tail(mpg)
+
+# count the number of distinct car models in this dataset
+length(levels(as.factor(mpg$model)))
+```
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) + geom_point()
+```
+
+## Exploring qplot aesthetics
+
+See the lecture notes for details. Plot the *hwy \~ displ* scatterplot above changing each of the 4 aesthetics
+
+```{r}
+
+```
+
+Now setting `class` as the colour attribute
+
+```{r}
+
+```
+
+## Mapping Aesthetics to Values
+
+Use the colour aesthetic to represent each car's *class*
+
+```{r}
+
+```
+
+## Faceting
+
+Use faceting to plot the data in a grid of 1 column and 3 rows. The *drv* feature should determine which row an observation is plotted in
+
+```{r}
+
+```
+
+Now do the same, but rather than rows, have the facets in 3 columns
+
+```{r}
+
+```
+
+## Task 1 - Try each of the 3 examples of faceting
+
+See lecture notes for examples to try
+
+```{r}
+
+```
+
+## Wrapping a Variable
+
+facet_grid will always create an m x n grid of plots, even if there is no data available for some of the combinations. facet_wrap will only use combinations of variables which have values, so the result isn't always square. facet_wrap will do its best to format the individual plots as neatly as possible. By default, facet_grid will format a single variable as either a single row or single column grid
+
+```{r}
+
+```
+
+## Geoms
+
+Use geom *point* to explicitly specify that a scatterplot should be drawn.
+
+```{r}
+
+```
+
+Next, create the same plot but specify a 'smooth' geometry
+
+```{r}
+
+```
+
+Create the plot again, this time overlay the smooth geometry on the point geometry
+
+```{r}
+
+```
+
+## Task 2 - Creating a Boxplot with qplot
+
+How would you replace the following scatterplot with one containing boxplots?
+
+`ggplot(data = mpg, aex(x = class, y = hwy))`
+
+```{r}
+
+```
+
+## Reordering Plots
+
+Reorder the levels of the *class* factor by *hwy*, ascending
+
+```{r}
+
+```
+
+## Task 3 - Reordering in Depth
+
+1.  Read the help page for the function `reorder`, here are some tips:
+    -   scan page for relevant info.
+    -   ignore things that don’t make sense.
+    -   try out examples.
+2.  Redraw the previous plot with the variable class ordered by the median of hwy.
+
+```{r}
+
+```
+
+### Histograms
+
+Create a histogram for the *carat* feature using default bin-width
+
+```{r}
+
+```
+
+Set the binwidth to 1
+
+```{r}
+
+```
+
+Try out a binwidth of 0.01
+
+```{r}
+
+```
+
+## Task 4
+
+Experiment with the bin-width of the *carat* histogram, find a suitable value
+
+```{r}
+
+```
+
+Save the histogram with the suitable bin-width to the current working directory. Call it *diamond_value_by_carat.png*
+
+```{r}
+
+```
