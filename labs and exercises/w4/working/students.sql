@@ -1,5 +1,7 @@
 -- Drop table student if you need to create it again
 -- drop table student;
+-- adda comment to sql script using dash dash single line
+-- or /* ... */ for multi line
 
 create table STUDENT (
 student_number VARCHAR(20) PRIMARY KEY,
