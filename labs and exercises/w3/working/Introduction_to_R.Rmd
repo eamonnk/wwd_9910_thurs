@@ -513,6 +513,7 @@ Complete the exercises to check the understanding of basic R concepts.
 Create three variables in R: one numeric, one logical, and one character. Check their types using the `class()` function.
 
 ```{r}
+# like python don't need to specify the types, just assign object and R assigns it a ttype
 x <- 3
 y = TRUE
 z = 'chartest'
@@ -540,9 +541,25 @@ typeof(x)
 #     x <- as.integer(x)
 # }
 
-x <- as.integer(x)
+# create a type of object
+num_val<-42.5
 
-class(x)
+# convert to integer
+xint <- as.integer(num_val)
+class(xint)
+
+# convert to character
+xchar <- as.character(num_val)#
+class(xchar)
+
+# perform operaton
+sum_int <- xint + 10
+# sum_char <- xchar + 10 # this will produce and error
+
+# output
+xint
+xchar
+sum_int
 
 ```
 
@@ -557,6 +574,14 @@ class(vec1)
 typeof(vec1)
 sapply(vec1, typeof)
 
+# solution
+num_vector <- c(1L, 2.5, 3,  4.7)
+
+# determine the type of each element
+typeof(num_vector)
+
+# all numberc type_sum(use c letetr ton crate vecotors)
+
 ```
 
 ## Exercise 4: Vector Operations
@@ -565,6 +590,20 @@ Create a vector containing the numbers from 1 to 10. Write R code to calculate t
 
 ```{r}
 
+
+# solution 
+
+vec <- 1:10
+
+# calculations
+sum_vec <- sum(vec)
+mean_vec <- mean(vec)
+sd_vec <- sd(vec)
+
+#output
+sum_vec
+mean_vec
+sd_vec
 
 
 ```
@@ -579,6 +618,12 @@ list1 <- list(1, 3, TRUE, 'string1')
 print(list1)
 list1[[1]]
 
+#solution
+my_list <- list(42, TRUE, 'R programming')
+
+second_element <- my_list[[2]] # index starts from 1 and not from zero
+second_element
+
 ```
 
 ## Exercise 6: Functions in R
@@ -586,6 +631,21 @@ list1[[1]]
 Write a function in R that takes a vector as input and returns a list with the following components: the length of the vector, the sum of its elements, and the product of its elements.
 
 ```{r}
+
+
+# solution
+vector_summary <- function(vec) {
+  list(
+    length = length(vec),
+    sum = sum(vec),
+    product = prod(vec)
+  )
+}
+  
+# example usage
+example_vec<- 1:5
+vector_summary(example_vec)
+
 ```
 
 ## Exercise 7: Creating Data Frames
@@ -598,6 +658,17 @@ Age<-c(35, 16, 17, 21, 22)
 IsStudent<-c(TRUE, FALSE, FALSE, TRUE, TRUE)
 df1<-data.frame(Name, Age, IsStudent)
 df1
+
+
+# Solution
+# don't need to imoport pandas as we do in python
+df9 <- data.frame(
+  Name = c("Alice", "Bob", "Charlie", "David", "Eva"),
+  Age = c(23, 30, 22, 35, 28),
+  IsStudent = c(TRUE, FALSE, TRUE, FALSE, TRUE)
+)
+
+df9
 ```
 
 ## Exercise 8: Modifying Data Frames
@@ -608,6 +679,14 @@ Write R code to add a new column to the data frame created in Exercise 7, which 
 df1$AgeinMonths <-(df1$Age * 12)
 
 df1
+
+# Solution
+# dollar sign access feature and using caretign new column name
+df9$AgeInMonths <- df9$Age * 12
+
+
+df9
+
 ```
 
 ## Exercise 9: Subsetting Data Frames
@@ -618,6 +697,12 @@ Use the `subset()` function to filter the data frame for rows where `IsStudent` 
 
 studentdf2 <- subset(df1, IsStudent == TRUE )
 studentdf2
+
+# solution 9
+# subset allows us create subset of the data based ont he condition yuo state...
+studentdf <- subset(df9, IsStudent == TRUE )
+studentdf
+
 ```
 
 ## Exercise 10: Calculating Summary Statistics
@@ -627,4 +712,9 @@ Write a script to calculate the average age of students in the data frame.
 ```{r}
 average_age <- mean(studentdf2$Age)
 print(average_age)
+
+# Solution
+
+
+
 ```

@@ -3,11 +3,23 @@ title: "Converted from IPYNB"
 output: html_notebook
 ---
 
+
 # Lab Week 3
 
 1.  Using `read.table`, Load the file `shopping.tsv`. into R. `shopping.tsv` is a tab-separated file. Ensure column names are interpreted correctly, and missing values correctly inferred.
 
 ```{r}
+library(readr)
+
+shopping_tib_1 <- read.table(
+  'shopping.tsv',
+  sep = '\t',
+  header = TRUE,
+  stringsAsFactors = TRUE,
+  fill = TRUE,
+  na.string = c('?', 'Not Applicable')
+)
+view(shopping_tib_1)
 
 ```
 
@@ -15,23 +27,135 @@ output: html_notebook
 
 ```{r}
 
+shopping_tib_1 <- read_tsv(
+  'shopping.tsv',
+  na= c('?', 'Not Applicable')
+)
+spec(shopping_tib_1)
+
+
 ```
 
 3.  Import the first 50 rows of `jester-data.csv`. The jester dataset gives ratings given by human raters (columns) to individual jokes (represented by rows). Be aware that this file has no headers. Calculate the average rating of each joke. Tip: check the `t` function.
 
 ```{r}
 
+# jester_df1 <- read_csv('jester-data.csv', col_names = FALSE, n_max = 50)
+# dim(jester_df1)
+# 
+# jester_df1$joke_ratingmeans <-(rowMeans(jester_df1, na.rm = TRUE))
+# 
+# View(jester_df1)
+# names(jester_df1)
+# dim(jester_df1)
+# view(jester_df1)
+
+library(readr)
+
+# Import first 50 rows, no headers
+jester_df2 <- read_csv('jester-data.csv', col_names = FALSE, n_max = 50)
+
+# Transpose the data (makes jokes as columns)
+# t(jester_df) swaps rows ↔ columns.
+#Using t() is especially helpful if you want to calculate means across the transposed dimension without manually thinking in terms of rows or columns.
+jester_t2 <- t(jester_df2)
+
+# Compute column means (original rows)
+joke_means <- colMeans(jester_t2)
+
+# Add back to original data frame
+jester_df2$joke_ratingmeans <- joke_means
+
+# View
+View(jester_df2)
+
+# view just the meand column data
+jester_df$joke_ratingmeans
+
+#
+# Or as a data frame (keeps column name)
+jester_df["joke_ratingmeans"]
+
+# View in a separae window
+View(jester_df["joke_ratingmeans"])
+
+                               
 ```
 
 4.  Import the 51st to 100th rows of the jester dataset, and only the first 8 columns. Using R functions, calculate which rater gave the highest overall value of total ratings.
 
 ```{r}
+jester_tib1 <- read_csv('jester-data.csv',
+                        col_names = FALSE,
+                        skip = 50,
+                        n_max = 50
+                        )
+# notation is dataframe[ rows, columns]
+# before comma which rows to select
+# after comma which columns to select
+# comma here > select all rows
+#
+jester_tib2 <- (jester_tib1[,1:8])
 
+View(jester_tib2)
+
+rater_totals <- colSums(jester_tib2, na.rm = TRUE)
+
+# which.max gives col index of the max total
+# rater_totals[highest_rater_index] gives the  actual total value
+highest_rater_index <- which.max(rater_totals)
+highest_rater_total <- rater_totals[highest_rater_index]
+
+highest_rater_index
+highest_rater_total 
 ```
 
 5.  Import the table from the website <https://www.skysports.com/champions-league-table>. Set the correct data type for each column.
 
 ```{r}
+
+#install.packages('rvest')
+library(rvest)
+webpage <- read_html("https://www.skysports.com/champions-league-table")
+tableNodes <- html_nodes(webpage, "table")
+head(tableNodes)
+table <- html_table(tableNodes)
+skychamplge_table_df <- table[[1]]
+View(skychamplge_table_df)
+
+# gives rows x cols - and tibble or dataframe - tbl_df / tbl / data.frame (tibble is a type of dataframe apparently)
+# structure()
+str(skychamplge_table_df)
+#cass() - gives class of object i.e. tibble or dataframe
+class(skychamplge_table_df)
+
+# % > %  means pipe this result into the next function
+% > % 
+  
+# get columns names
+colnames(skychamplge_table_df)
+# replaces all sequences of whitespace and newlines (\n, \t) with a single space.
+# trimws() removes leading and trailing spaces.
+clean_names <- trimws(gsub("\\s+", " ", names(skychamplge_table_df)))
+clean_names
+
+# get errors when trying to set as.integer etc as column names not clean_names
+# so have to clean column names first... as below
+names(skychamplge_table_df) <- trimws(gsub("\\s+", " ", names(skychamplge_table_df)))
+names(skychamplge_table_df)
+
+# set types for each column
+skychamplge_table_df$Position <- as.integer(skychamplge_table_df$Position)
+skychamplge_table_df$Team <- as.character(skychamplge_table_df$Team)
+skychamplge_table_df$Played <- as.integer(skychamplge_table_df$Played)
+skychamplge_table_df$Won <- as.integer(skychamplge_table_df$Won)
+skychamplge_table_df$Drawn <- as.integer(skychamplge_table_df$Drawn)
+skychamplge_table_df$Lost <- as.integer(skychamplge_table_df$Lost)
+skychamplge_table_df$GF <- as.integer(skychamplge_table_df$GF)
+skychamplge_table_df$GA <- as.integer(skychamplge_table_df$GA)
+skychamplge_table_df$GD <- as.integer(skychamplge_table_df$GD)
+skychamplge_table_df$Points <- as.integer(skychamplge_table_df$Points)
+
 
 ```
 
@@ -39,16 +163,108 @@ output: html_notebook
 
 ```{r}
 
+# use saveRDS for single Object
+
+saveRDS(skychamplge_table_df, "sky_cl_table_rdatobj.rds")
+
+# can reload with
+skychamplge_table_df4 <- readRDS("sky_cl_table_rdatobj.rds")
+str(skychamplge_table_df4 )
+
+# save a csv using \| as colu separator
+save_cvs
+
+# from chat - don't see a save_csv option
+# write.table to save a stxt file
+# write.csv to save as csv file
+# row.names = FALSE ensures R doesn’t add row numbers as an extra column in the CSV.
+
+write.csv(skychamplge_table_df, "cl_csv_save.csv", row.names = FALSE)
+
+# If you want a different separator (like |), you can use write.table() instead:
+# quote = FALSE is optional but prevents quotes around text columns
+write.table(skychamplge_table_df, "cl_csv_save_table1.csv", sep = '|', row.names = FALSE)
+
 ```
 
 7.  Download (using R) the following dataset <https://www3.stats.govt.nz/2018census/Occupied-dwellings-unoccupied-dwellings-dwellings-under-construction-private-and-non-private-dwellings-2006-2013-2018-Censuses-RC-TA-SA2-DHB.zip>. Extract all csv files to separate data frames
 
 ```{r}
 
+url <- "https://www3.stats.govt.nz/2018census/Occupied-dwellings-unoccupied-dwellings-dwellings-under-construction-private-and-non-private-dwellings-2006-2013-2018-Censuses-RC-TA-SA2-DHB.zip"
+download.file(url = url, destfile = "wk3_zip_dnld.zip")         # Destination file in the current working directory
+# the below didn't exrtact into folder
+# unzip("wk3_zip_dnld.zip")
+# list.files(path = "./wk3_zip_dnld")
+
+# this extracted into folder - craeted it and extracted..then listed the files,,,
+unzip("wk3_zip_dnld.zip", exdir = "wk3_zip_dnld")
+list.files("wk3_zip_dnld")
+
+# Path to the folder where ZIP was extracted
+folder_path <- "wk3_zip_dnld"
+(folder_path)
+
+# List all CSV files in the folder ans put the names pf them into a list >> 'csv_files'
+csv_files <- list.files(path = folder_path, pattern = "\\.csv$", full.names = TRUE)
+
+csv_files
+
+# Read each CSV into a separate data frame in a named list
+# lapply() is an R function that applies a function to each element of a list (or vector) and returns a list. Think of it as a “loop in one line.”
+# sapply() is very similar to lapply() but with a key difference: it tries to simplify the result.
+# ________________________________________
+# Comparison
+# Function	Returns
+# lapply()	Always a list
+# sapply()	Vector or matrix if possible, otherwise a list
+
+dfs <- lapply(csv_files, read.csv, stringsAsFactors = FALSE)
+
+# Name each list element after the file (without extension)
+names(dfs) <- tools::file_path_sans_ext(basename(csv_files))
+
+# Example: view the first few rows of the first data frame
+head(dfs[[1]])
+dfs
+
+#dfs is a list of data frames, each corresponding to one CSV file.
+# You can access them by name: dfs$FilenameWithoutExtension or by index: dfs[[1]].
+# If you want them as separate variables in your environment, you could do
+
 ```
 
 8.  Give each data frame a meaningful name. Save the objects to `.rdata` format
 
 ```{r}
+
+# list all csv files in he folder_path
+
+folder_path <- "wk3_zip_dnld"
+
+# List CSV files
+csv_files <- list.files(path = folder_path, pattern = "\\.csv$", full.names = TRUE)
+csv_files
+
+# Create clean variable names
+df_names <- tools::file_path_sans_ext(basename(csv_files))
+df_names <- gsub("-", "_", df_names)        # replace hyphens with underscores
+df_names <- gsub(" ", "_", df_names)        # replace spaces with underscores
+df_names <- make.names(df_names)            # ensure valid R variable names
+
+# Read CSV files into a list
+dfs <- lapply(csv_files, read.csv, stringsAsFactors = FALSE)
+
+# Assign names to the list elements
+names(dfs) <- df_names
+
+
+list2env(dfs, envir = .GlobalEnv)
+
+save(list = df_names, file = "wk3_dataframes.rdata")
+
+load("wk3_dataframes.rdata")
+
+
 
 ```
