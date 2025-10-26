@@ -9,7 +9,7 @@ In R the [`DBI`](https://dbi.r-dbi.org/) package is important package that provi
 
 ```{r}
 # To install on conda "conda install -c r r-dbi"
-# install.packages("DBI")
+install.packages("DBI")
 library(DBI)
 ```
 
@@ -17,7 +17,7 @@ To connect to a PostgreSQL database you will need the `RPostgres` package.
 
 ```{r}
 # To install on conda "conda install -c conda-forge r-rpostgres"
-# install.packages("RPostgres")
+install.packages("RPostgres")
 library(RPostgres)
 ```
 
@@ -26,11 +26,11 @@ To finally connect to the database you can execute the following code (with your
 ```{r}
 # Connect to a PostgreSQL database
 con <- dbConnect(RPostgres::Postgres(), 
-                 dbname = "postgres",
+                 dbname = "db_1",
                  host = "localhost",
                  port = 5432,
                  user = "postgres",
-                 password = "admin")
+                 password = "password0134!")
 
 # Execute a SQL query
 query <- "SELECT * FROM student"
@@ -46,7 +46,7 @@ result <- dbGetQuery(con, query)
 Of course, you can also run more complex raw SQL queries:
 
 ```{r}
-result <- dbGetQuery(con, "SELECT * FROM course_codes WHERE course_description LIKE 'D%'")
+result <- dbGetQuery(con, "SELECT * FROM course_codes WHERE course_desc LIKE 'A%'")
 
 result
 ```
@@ -54,12 +54,13 @@ result
 If you need to fetch results one at a time you might want to use [`dbFetch()`](https://www.rdocumentation.org/packages/DBI/versions/0.5-1/topics/dbFetch)
 
 ```{r}
-query <- dbSendQuery(con, "SELECT * FROM course_codes WHERE course_description LIKE 'D%'")
+query <- dbSendQuery(con, "SELECT * FROM course_codes WHERE course_desc LIKE 'A%'")
 result <- dbFetch(query, n = 1)
 result
 ```
 
 The `dbplyr` package allows you to write R code that gets translated into SQL queries, similarly to what SQLAlchemy does in Python. It is an extension of the `dplyr` package specifically designed to work with databases. On future weeks we are going to see many `dplyr` methods to manipulate data. Since there is no much difference between the syntax of `dbplyr`and `dplyr`, this won't be covered in depth now, but you can see some examples of queries employing `dbplyr` methods below:
+tbl = table
 
 ```{r}
 library(dplyr)
@@ -69,6 +70,7 @@ library(dbplyr)
 remote_table <- tbl(con, "student")
 ```
 
+can add SELECT as below
 ```{r}
 # Example queries using dbplyr
 
@@ -78,6 +80,7 @@ query1 <- remote_table %>%
 query1
 ```
 
+add a filter which would be our WHERE clause
 ```{r}
 # Filtering
 query2 <- remote_table %>%
@@ -85,12 +88,16 @@ query2 <- remote_table %>%
 query2
 ```
 
+sUMMARISE - 
+
 ```{r}
 # Grouping and aggregation
 query3 <- remote_table %>%
   summarise(unique_categories = n_distinct(prog_code))
 query3
 ```
+
+AGGREGATION - INNER JOIN
 
 ```{r}
 # Joining tables
@@ -134,6 +141,56 @@ Unfortunately in R there is no easy way to extract the ERD of a generic database
 
 ```{r}
 
+# Connect to a PostgreSQL database
+con <- dbConnect(RPostgres::Postgres(), 
+                 dbname = "db_1",
+                 host = "localhost",
+                 port = 5432,
+                 user = "postgres",
+                 password = "password0134!")
+
+# Execute a SQL query
+# Build a vector of table names: tables
+tables <- dbListTables(con)
+# 
+# # Display structure of tables
+str(tables)
+# 
+# return all column names for the table listed
+dbListFields(con, 'student')
+dbListFields(con, 'dept')
+dbListFields(con, 'emp')
+dbListFields(con, 'course_codes')
+
+# give yuo a snapshot of the first 5 rows
+student_df <- dbGetQuery(con, "SELECT * FROM student LIMIT 5;")
+head(student_df)
+
+
+query <- "SELECT * FROM student"
+result <- dbGetQuery(con, query)
+result
+
+# or
+# put lal tables into a vector
+tables <- c("course_codes", "dept", "emp", "student")
+
+# loop through the vector 
+# paste() - joins strings together - concatenates strings *with* a separator
+# paste0()- joins strings together - concatenates strings *without* any separator
+# ctd - returns a string or vector of strins yuo cna assign to a vraiable
+# returns a string doesn't automatically print...
+# cat = concatenate and print
+# prints strings directly to the console wihtout quotes for extra formatting..
+for(tbl in tables){
+  cat("Table:", tbl, "\n")
+  df <- dbGetQuery(con, paste0("SELECT * FROM ", tbl, " LIMIT 8;"))
+  print(df)
+  cat("\n-----------------------\n")
+}
+# This will print the first 5 rows of each table in a readable way.
+
+# dbListTables, dbListFields, dbGetQuery? all come from DBI package
 
 ```
 
@@ -141,23 +198,102 @@ Unfortunately in R there is no easy way to extract the ERD of a generic database
 
 ```{r}
 
+s_count_df <- dbGetQuery(con, "SELECT COUNT(student_number) FROM student WHERE dob > '01-Nov-1980'")
+head(s_count_df)
+
 ```
 
 3.  Retrieve the total number of students in each program.
 
 ```{r}
 
+s_count_df <- dbGetQuery(con, "SELECT prog_code, COUNT(student_number) FROM student GROUP BY prog_code")
+head(s_count_df)
+
 ```
 
 4.  Retrieve the student number, program code, course description, and date of birth for each student. You will need to join the two tables
 
 ```{r}
+# prog_code and course_code are different names in the two different tables course _codes and student
+# hence join on course_id
+stud_data_df <- dbGetQuery(con, "
+select 
+  student.student_number, 
+  student.prog_code, 
+  student.dob, 
+  course_codes.course_desc 
+FROM student 
+INNER JOIN course_codes on 
+  student.course_id = course_codes.course_id")
+head(stud_data_df )
+# 
+# 
+# stud_data_df <- dbGetQuery(con, "
+#   SELECT 
+#     s.student_number, 
+#     s.prog_code, 
+#     s.dob, 
+#     c.course_desc
+#   FROM student AS s
+#   INNER JOIN course_codes AS c
+#     ON s.course_id = c.course_id
+# ")
+# head(stud_data_df)
+
 
 ```
 
 5.  Using `dplyr`, call `tbl()` to create remote table objects for both STUDENT. Filter the STUDENT data to retrieve students born in a specific year. Hint: you will need to use the [filter](https://dplyr.tidyverse.org/reference/filter.html) method.
 
 ```{r}
+library(dplyr)
+
+# Create a remote data table using dbplyr
+remote_table <- tbl(con, "student")
+
+# query 1
+query1 <- remote_table %>%
+  select(first_name, surname)
+query1
+
+
+# Filtering born after date
+query2 <- remote_table %>%
+  filter(dob > "1988-01-01")
+query2
+
+# Filtering born in specific year
+query2 <- remote_table %>%
+  filter(sql(extract(year from dob) == 1989))
+query2
+
+# library(dplyr)
+
+# Filter students born in 1989
+query2 <- remote_table %>%
+  filter(sql("EXTRACT(YEAR FROM dob) = 1989"))
+
+# Execute query and collect results
+query2_df <- query2 %>% collect()
+query2_df
+
+
+
+# the below all come from dbplyr and dplyr
+# tbl()	dbplyr (built on top of dplyr)	Creates a remote table reference to a database table.
+# select(), filter(), mutate(), summarise(), arrange(), %>%
+
+# even though dplyr isn't explicitly called the functions are coming from it#
+# functions like select() and filter() come from dplyr, 
+# but dbplyr extends them so they work on remote database tables (like your PostgreSQL connection).
+# tbl() → comes from dbplyr
+# 
+# filter(), select(), %>% → come from dplyr
+# 
+# Together, they let you write R code that runs SQL under the hood
+# 
+# ✅ Yes — your code is using dplyr (through dbplyr).
 
 ```
 
@@ -165,11 +301,117 @@ Unfortunately in R there is no easy way to extract the ERD of a generic database
 
 ```{r}
 
+# the below works
+query_avg_age_per_prog <- dbGetQuery(con, "
+  SELECT 
+      s.course_id,
+      ROUND(AVG(EXTRACT(YEAR FROM AGE(CURRENT_DATE, s.dob))), 2) AS average_age
+  FROM 
+      student s
+  GROUP BY 
+      s.course_id
+  ORDER BY 
+      s.course_id;
+")
+
+query_avg_age_per_prog
+
+# use join wityh couse_codes to get course code and description
+#, 2 >> ROUND (number, decinal places) ,2 is the number of decimals
+query_avg_age_per_prog <- dbGetQuery(con, "
+  SELECT 
+      c.course_code,
+      c.course_desc,
+      ROUND(AVG(EXTRACT(YEAR FROM AGE(CURRENT_DATE, s.dob))), 2) AS average_age
+  FROM student AS s
+  INNER JOIN course_codes AS c
+      ON s.course_id = c.course_id
+  GROUP BY c.course_code, c.course_desc
+  ORDER BY c.course_code;
+")
+query_avg_age_per_prog
+
+
+### 
+# 2️⃣ Applying it to average age
+# AVG(EXTRACT(YEAR FROM AGE(CURRENT_DATE, s.dob)))
+# 
+# 
+# EXTRACT(YEAR FROM AGE(...)) → calculates the whole years for each student
+# 
+# AVG(...) → takes the average of those ages across all students in a group
+# 
+# Now, the result of AVG() might be something like 35.6666667.
+# 
+# ROUND(..., 2) → rounds this value to 2 decimal places, giving 35.67.
+#
+# 3️⃣ Example
+# 
+# Suppose we have three students with ages: 30, 32, 34
+# 
+# Average: (30 + 32 + 34) / 3 = 32
+# 
+# Rounded to 2 decimals: ROUND(32, 2) → still 32.00
+# 
+# Suppose ages were: 30, 33, 34
+# 
+# Average: (30 + 33 + 34)/3 = 32.3333
+# 
+# Rounded to 2 decimals: ROUND(32.3333, 2) → 32.33
+# 
+# ✅ The , 2 simply controls how precise your rounded average is.
+
 ```
 
 7.  Challenge! Create a bar chart using [`ggplot2`](https://r-graph-gallery.com/218-basic-barplots-with-ggplot2.html) to visualize the distribution of student birth years. Hint: you might need to convert int64 types to numeric.
 
 ```{r}
+library(ggplot2)
+
+# step 1 - get student data from database
+student_yrob <- dbGetQuery(con, "
+select
+  student.first_name,
+  student.surname,
+  student.dob
+from student
+")
+
+head(student_yrob)
+
+# 2 extract the birth year
+# mutate() method mofifies a variable - creat en ew avriables with functinos of existing variables (from book)
+# dplyr functions  = filter(), arrange(), select (), mutate(), summarize() 
+# can use with group_by which cnahnges the scope of each function from operating on whole dataset to operating on group by group
+# structure of use >> fn(dataframe, arguments to describe what to do, result in a new df))
+
+# format(dob, "%Y") extracts the year as a string
+# as.numeric() converts it to numeric (important if you want proper ordering in the plot)
+student_birth_yr <- student_yrob %>%
+  mutate(birth_year = as.numeric(format(dob, "%Y"))) # birth_year is a new column mame
+
+
+# 3 count students per birth year
+student_year_counts <- student_birth_yr %>%
+  # this is the dplyr version of GROUP BY In SQL, GROUP BY changes the scope of aggregation functions (COUNT, SUM, AVG, etc.) so they are calculated per group instead of over the whole table.
+  # In R with dplyr, group_by() works the same way: it sets the grouping context for subsequent operations like summarise() or mutate().
+  group_by(birth_year) %>% # <-- use the column name, not the dataframe - groups the data by birth year
+  summarise(count = n()) %>% # counts rows within each group
+  ungroup() # removes the grouping, so any later operations act on the whole dhata frame again
+
+# 4. plot the chart
+# stat = "identity" → tells ggplot2 to use the count column directly.
+# fill = "steelblue" → makes the bars look nicer.
+# theme_minimal() → gives a clean background.
+
+ggplot(student_year_counts, aes(x = birth_year, y = count)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(
+    title = "Distribution of Student Birth Years",
+    x = "Birth Year",
+    y = "Number of Students"
+  ) +
+  theme_minimal()
 
 ```
 
