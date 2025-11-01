@@ -23,7 +23,31 @@ length(levels(as.factor(mpg$model)))
 ```
 
 ```{r}
-ggplot(mpg, aes(x = displ, y = hwy)) + geom_point()
+# library(ggplot2)
+# # ggplot(mpg, aes(x = displ, y = hwy)) + geom_point()
+# 
+# # colour
+# ggplot(data = mpg, aes(x = displ, y = hwy)) + geom_point(colour = 'red')
+# 
+# # size
+# ggplot(data = mpg, aes(x = displ, y = hwy)) + geom_point(size = 0.25)
+# 
+# 
+# # transparency
+# ggplot(data = mpg, aes(x = displ, y = hwy)) + geom_point(alpha = 0.1)
+# 
+# # shape
+# ggplot(data = mpg, aes(x = displ, y = hwy)) + geom_point(shape = 4)
+
+
+# move colour to aesthetic - 
+# # colour
+# ggplot(data = mpg, aes(x = displ, y = hwy, colour = class)) + geom_point()
+
+
+# colour
+ggplot(data = mpg, aes(x = displ, y = hwy, size = cty, colour = class)) + geom_point()
+
 ```
 
 ## Exploring qplot aesthetics
@@ -45,6 +69,18 @@ Now setting `class` as the colour attribute
 Use the colour aesthetic to represent each car's *class*
 
 ```{r}
+# colour
+ggplot(data = mpg, aes(x = displ, y = hwy)) + geom_point(colour = 'red')
+
+# size
+ggplot(data = mpg, aes(x = displ, y = hwy)) + geom_point(size = '0.25')
+
+
+# transparency
+ggplot(data = mpg, aes(x = displ, y = hwy)) + geom_point(alpha = '0.1')
+
+# shape
+ggplot(data = mpg, aes(x = displ, y = hwy)) + geom_point(shape = '4')
 
 ```
 
@@ -53,12 +89,20 @@ Use the colour aesthetic to represent each car's *class*
 Use faceting to plot the data in a grid of 1 column and 3 rows. The *drv* feature should determine which row an observation is plotted in
 
 ```{r}
+ggplot(data = mpg, aes(x = displ, y = hwy)) + 
+geom_point() + 
+facet_grid(drv ~ . )
 
 ```
 
 Now do the same, but rather than rows, have the facets in 3 columns
 
 ```{r}
+
+ggplot(data = mpg, aes(x = displ, y = hwy)) + 
+geom_point() + 
+facet_grid(. ~ drv )
+
 
 ```
 
@@ -67,6 +111,14 @@ Now do the same, but rather than rows, have the facets in 3 columns
 See lecture notes for examples to try
 
 ```{r}
+
+# column displ vs hwy -- what is cyl?
+# ggplot(data = mpg, aes(x = displ, y = hwy)) + geom_point() + facet_grid(. ~ cyl )
+
+#ggplot(data = mpg, aes(x = displ, y = hwy)) + geom_point() + facet_grid(drv ~ cyl )
+# 
+ggplot(data = mpg, aes(x = displ, y = hwy)) + geom_point() + facet_grid(~  class )
+# 
 
 ```
 
@@ -90,6 +142,11 @@ Next, create the same plot but specify a 'smooth' geometry
 
 ```{r}
 
+ggplot(data = mpg, aes(x = displ, y = hwy)) + 
+geom_point() + 
+geom_smooth()
+
+
 ```
 
 Create the plot again, this time overlay the smooth geometry on the point geometry
@@ -105,6 +162,8 @@ How would you replace the following scatterplot with one containing boxplots?
 `ggplot(data = mpg, aex(x = class, y = hwy))`
 
 ```{r}
+ggplot(data = mpg, aes(x = class, y = hwy)) + geom_boxplot()
+
 
 ```
 
@@ -113,6 +172,13 @@ How would you replace the following scatterplot with one containing boxplots?
 Reorder the levels of the *class* factor by *hwy*, ascending
 
 ```{r}
+
+# this re-orders byt the mean hence not all ascending 
+# ggplot(data = mpg, aes(x = reorder(class, hwy), y = hwy)) + geom_boxplot()
+
+# answer - re-order byt he emdian not the mean so all ascending 
+ggplot(data = mpg, aes(x = reorder(class, hwy, fun = median),  y = hwy)) + 	geom_boxplot() 
+
 
 ```
 
@@ -133,6 +199,8 @@ Reorder the levels of the *class* factor by *hwy*, ascending
 Create a histogram for the *carat* feature using default bin-width
 
 ```{r}
+ggplot(data = diamonds, aes(x = cut, colour = cut)) + ?	geom_bar()
+
 
 ```
 

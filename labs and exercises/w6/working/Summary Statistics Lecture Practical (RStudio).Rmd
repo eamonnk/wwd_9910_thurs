@@ -70,6 +70,8 @@ bankData <- read_delim('./bankData/bank-full.csv', delim=';', na=c('unknown'), g
 problems(bankData)
 ```
 
+text here
+
 
 Or, use a loop to convert all factor columns
 

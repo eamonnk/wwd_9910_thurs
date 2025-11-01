@@ -14,6 +14,43 @@ Import and parse the wine dataset from the UCI machine learning repository into 
 1.  Calculate the mean value for Alcohol.
 
 ```{r}
+# Download the wine.zip file from UCI
+url <- 'https://archive.ics.uci.edu/static/public/109/wine.zip' # define the url
+download.file(url, destfile = 'wine.zip') # downlaods the zip
+unzip('wine.zip', list = T) # just has a look at whats inside it
+unzip('wine.zip', exdir = './wine') # extracts to folder /wine directory
+list.files('./wine') # lissts whats been extracted an dint he new folder
+
+
+```
+```{r}
+# import the data intoa  dataframe or tibble
+# When you use functions like read_csv() or read_delim(), the col_names argument tells R whether the first row of your data file contains column headers (names) or actual data.
+# if you use col_names = TRUE , R assumes the first row of your file contains column names, not data
+library(readr)
+wine_tbl <- read_delim('./wine/wine.data', delim=',', col_names = FALSE)
+spec(wine_tbl)
+
+
+```
+
+1s. check dataset type tibble or dataframe
+```{r}
+
+class(wine_tbl)
+library(tibble)
+is_tibble(wine_tbl)
+
+# tibble  >>> into >>? dataframe
+wine_tbl <- as.data.frame(wine_tbl)
+class(wine_tbl)
+is_tibble(wine_tbl)
+
+
+# dataframe >>> into a >>>> tibble
+wine_tbl <- as_tibble(wine_df)
+class(wine_tbl)
+is_tibble(wine_tbl)
 
 ```
 
@@ -21,11 +58,52 @@ Import and parse the wine dataset from the UCI machine learning repository into 
 
 ```{r}
 
+# When you use functions like read_csv() or read_delim(), the col_names argument tells R whether the first row of your data file contains column headers (names) or actual data.
+# if you use col_names = TRUE , R assumes the first row of your file contains column names, not data
+library(readr)
+wine_tbl <- read_delim('./wine/wine.data', delim=',', col_names = FALSE)
+spec(wine_tbl)
+
+# assign proper column names from the wine.names file for the columns
+colnames(wine_tbl) <- c(
+  "Class",
+  "Alcohol",
+  "Malic_Acid",
+  "Ash",
+  "Alcalinity_of_Ash",
+  "Magnesium",
+  "Total_Phenols",
+  "Flavanoids",
+  "Nonflavanoid_Phenols",
+  "Proanthocyanins",
+  "Color_Intensity",
+  "Hue",
+  "OD280_OD315",
+  "Proline"
+)
+
+median_malic <- median(wine_tbl$Malic_Acid)
+paste (" The median valeu for mailc acid is ", median_malic)
+
 ```
+
+```{r}
+
+summary(wine_tbl)
+
+```
+
+
 
 3.  Calculate the five major percentile values for Flavanoids
 
 ```{r}
+
+# only workls on single numeric column
+# fivenum(wine_tbl)
+
+# to ONLY APLY IT TO COLI,NS THATARE NUMERIC
+sapply(wine_tbl[, sapply(wine_tbl, is.numeric)], fivenum)
 
 ```
 
@@ -33,11 +111,39 @@ Import and parse the wine dataset from the UCI machine learning repository into 
 
 ```{r}
 
+names(wine_tbl)
+percntl_23 <- quantile(wine_tbl$Proanthocyanins, .23)
+
+print(paste0("The 23rd percentile of Proanthocyanins is ", percntl_23))
+
 ```
 
 5.  Calculate the mean value for all columns (this can be done as one liner)
 
 ```{r}
+
+# lapply() is an R function that applies a function to each element of a list (or vector) and returns a list. Think of it as a “loop in one line.”
+# sapply() is very similar to lapply() but with a key difference: it tries to simplify the result.
+
+sapply(wine_tbl, function(x) mean(x, na.rm = TRUE))
+
+# 🔍 Explanation:
+#  - sapply() applies a function to each column of a data frame or tibble.
+#  - mean(x, na.rm = TRUE) computes the mean for each column while ignoring NA values.
+#  - It will return a named numeric vector showing the mean for each column.
+# -  function(x) ? is a function without a name — defined on the fly and used inside another function (like sapply()). “For each element (here, each column) in wine_tbl, call it x, and then do something with it. ie.. get the mean .. 3 parameters in the brackets”
+# function(x) defines an inline (anonymous) function.
+# x represents one element from the data (in this case, each column).
+# It’s commonly used in apply, lapply, sapply, map, and tidyverse functions.
+
+
+# restrict it to numeric colmns only - "is.mnumeric"
+# sapply automaticalyl returns a vector instead of a list so mean_list is a vector...
+mean_list <- sapply(wine_tbl[sapply(wine_tbl, is.numeric)], mean, na.rm = TRUE)
+print(mean_list)
+
+median_list <- sapply(wine_tbl[sapply(wine_tbl, is.numeric)], median, na.rm = TRUE)
+print(median_list)
 
 ```
 
@@ -47,11 +153,38 @@ For the questions below, you might want to use a for loop to work through each c
 
 ```{r}
 
+# sapply(wine_tbl, function(x) sd(x, na.rm = TRUE))
+
+sd_list <-sapply(wine_tbl[sapply(wine_tbl, is.numeric)], sd, na.rm = TRUE)
+
+# lastg element is not  -1 (-1 just returns all elements except frist element)
+# to ge las element of a list have a few options
+# sd_list <- c(0.124, 0.229, 0.274)
+# sd_list[length(sd_list)]   # 0.274
+# tail(sd_list, 1)           # 0.274
+# sd_list[-1]                # 0.229 0.274 (drops the first element)
+
+sd_list <- round(sort(sd_list), 3)
+print(sd_list)
+
+print(paste(" the min stanard deviatin avlue is : ", sd_list[1]))
+print(paste(" the max stanard deviatin avlue is : ", tail(sd_list, 1)))
+print(paste(" different  =  is : ", tail(sd_list, 1) - sd_list[1]))
+
+
 ```
 
 7.  Using the standard deviation calculation, work out each column’s variance (do not use the built-in R function)
 
 ```{r}
+# For Loop structure is different to python...
+
+var_list <- sd_list^2
+print(var_list)
+
+for (i in var_list) {
+  print(paste("variance is ", i))
+}
 
 ```
 
@@ -59,11 +192,68 @@ For the questions below, you might want to use a for loop to work through each c
 
 ```{r}
 
+iqr_list <-sapply(wine_tbl[sapply(wine_tbl, is.numeric)], IQR, na.rm = TRUE)
+
+# sort in ascending order
+iqr_list <- sort(iqr_list)
+
+# pritn out column names also, unline earlier for loops which just took values..
+for (name in names(iqr_list)) {
+  print(paste(name, "IQR value is  :", iqr_list[name], "\n"))
+}
+
+
 ```
 
 9.  For each column, calculate whether the distribution is left or right skewed
 
 ```{r}
+
+# ifelse(condition, value_if_true, value_if_false)
+# is a vectorized if statement in R.
+# It checks a condition for each element of a vector.
+# Returns one of two values depending on whether that condition is TRUE or FALSE.
+
+skew_direction <- ifelse(mean_list > median_list, "Right-skewed",
+                    ifelse(mean_list < median_list, "Left-skewed",
+                           "Approximately symmetric"))
+
+# Creates a data frame — basically a table — combining several vectors that are the same length.
+# So you’re building a summary table that has:
+# Variable names,
+# Their mean,
+# Their median,
+# Their skew direction (left/right/symmetric).
+
+
+skew_summary <- data.frame(
+  Variable = names(mean_list),
+  Mean = round(mean_list, 3),
+  Median = round(median_list, 3),
+  Direction = skew_direction,
+  row.names = NULL
+)
+
+# or create a tibble instead of dataframe above (nicer visualisatuin apprarently)
+library(tibble)
+skew_summary <- tibble(
+  Variable = names(mean_list),
+  Mean = round(mean_list, 3),
+  Median = round(median_list, 3),
+  Direction = skew_direction
+)
+
+
+print(skew_summary)
+
+#optional visualisation
+barplot(mean_list - median_list,
+        main = "Mean − Median Difference (Skewness Direction)",
+        ylab = "Mean − Median",
+        col = ifelse(mean_list > median_list, "tomato", "steelblue"))
+abline(h = 0, lty = 2)
+
+
 
 ```
 
@@ -73,23 +263,60 @@ Load the airquality dataset which is available with the baseR package. (You can 
 
 ```{r}
 data <- airquality
+str(data)
+```
+
+```{r}
+str(data)
 ```
 
 1.  Calculate the total number of NAs in the Solar.R column.
 
 ```{r}
 
+# number of missing from solar column
+sum(is.na(airquality$Solar.R))
+
+
+# ask R
+# allmissing <- is.na(data)
+# print(allmissing)
+# 
+# # # get a count for eacjh column
+# counts <- colSums(allMissing)
+# print(counts)
+# # only the columnsthat have missing NAs
+# print(paste(" percentage NAs is ", (round(counts/nrow(data)*100, 2))))
+
+
+# # check for missing values
+# allMissing <- is.na(data)
+# 
+# # count NAs per column
+# counts <- colSums(allMissing)
+# 
+# # calculate percentage of missing values per column
+# percent_NA <- round(counts / nrow(data) * 100, 2)
+# 
+# # print results
+# print(paste("Percentage of NAs is:", percent_NA))
+
 ```
 
 2.  Calculate the total number of NAs in row 5
 
 ```{r}
+sum(is.na(airquality[5, ]))
+
 
 ```
 
 3.  Calculate the mean of the Ozone column (the answer is not NA!).
 
 ```{r}
+mean_list <- sapply(data[sapply(data, is.numeric)], mean, na.rm = TRUE)
+print(mean_list['Ozone'])
+print(mean_list[1])
 
 ```
 
@@ -97,11 +324,36 @@ data <- airquality
 
 ```{r}
 
+# check which rows have any NA
+rows_with_NA <- rowSums(is.na(airquality)) > 0
+
+# count how many rows have at least one NA
+num_rows_with_NA <- sum(rows_with_NA)
+
+# calculate percentage
+percent_rows_with_NA <- (num_rows_with_NA / nrow(airquality)) * 100
+
+# print results
+cat("Number of rows with at least one NA:", num_rows_with_NA, "\n")
+cat("Percentage of rows with at least one NA:", round(percent_rows_with_NA, 2), "%\n")
+
+
+
 ```
 
 5.  Calculate the total number of NAs for each column
 
 ```{r}
+# check which rows have any NA
+cols_with_NA <- colSums(is.na(airquality)) 
+
+print(cols_with_NA)
+
+# 🧠 Explanation
+# Part	What it does
+# is.na(airquality)	Returns a logical matrix (TRUE for NAs, FALSE otherwise)
+# colSums(...)	Adds up TRUEs column-wise (TRUE counts as 1, FALSE as 0)
+
 
 ```
 
@@ -110,30 +362,305 @@ data <- airquality
 Load the USArrests dataset from baseR.
 
 ```{r}
-data <- USArrests
+# can import as tibble using as_tibbel if we want
+data_usarr <- as_tibble(USArrests)
+
+summary(data_usarr)
+class(data_usarr)
+head(data_usarr)
+
+# wine_tbl <- as_tibble(wine_df)
+# class(wine_tbl)
+# is_tibble(wine_tbl)
 ```
 
 1.  Choose an appropriate visualisation (or visualisations) to determine whether UrbanPop or Assault are a better predictor of murder
 
 ```{r}
+# scatterplto will give an idea of correlation bteween 2 variables
+# 🧠 Step 1: Understanding your variables
+# 
+# In USArrests:
+# # Variable	Meaning
+# Murder	Murder arrests (per 100,000 residents)
+# Assault	Assault arrests (per 100,000 residents)
+# UrbanPop	Percent urban population
+# Rape	Rape arrests (per 100,000 residents)
+# 
+# Goal:
+# ➡️ Determine whether Assault or UrbanPop is more strongly related to Murder.
+# ✅ Step 2: Choose appropriate visualizations
+# Since all variables are numeric, you can use:
+# ⃣ 1  Scatter plots
+# # To visualize relationships between two numeric variables.
+# # Add a regression line to see the strength and direction of the relationship.
+# # 2️⃣ Correlation coefficients
+# # To numerically compare the strength of relationships.
+
+library(ggplot2)
+
+# Scatter plot: Murder vs Assault
+ggplot(data_usarr, aes(x = Assault, y = Murder)) +
+  geom_point(color = "steelblue") +
+  geom_smooth(method = "lm", se = FALSE, color = "darkred") +
+  labs(title = "Murder vs Assault",
+       x = "Assault Arrests per 100,000",
+       y = "Murder Arrests per 100,000")
+
+# Scatter plot: Murder vs UrbanPop
+ggplot(data_usarr, aes(x = UrbanPop, y = Murder)) +
+  geom_point(color = "seagreen") +
+  geom_smooth(method = "lm", se = FALSE, color = "darkred") +
+  labs(title = "Murder vs UrbanPop",
+       x = "Urban Population (%)",
+       y = "Murder Arrests per 100,000")
+
+
+cor(data_usarr$Murder, data_usarr$Assault)
+cor(data_usarr$Murder, data_usarr$UrbanPop)
+
+# 📊 Example output (actual results from USArrests)
+# Variable	Correlation with Murder
+# Assault	0.80 (strong positive)
+# UrbanPop	0.07 (weak positive)
+# 🧩 Step 5: Interpretation
+# 
+# The Murder vs Assault scatter plot will show a strong upward trend.
+# 
+# The Murder vs UrbanPop scatter plot will look scattered with no clear pattern.
+# 
+# The correlation confirms this numerically.
+# 
+# ✅ Conclusion:
+# 
+# Assault is a much better predictor of Murder than UrbanPop.
 
 ```
 
 2.  Load the msleep dataset from baseR. Choose an appropriate visualisation to give a good summary of the spread of sleep patterns based on diet (the column vore). Plot this spread for each category of animal.
 
 ```{r}
+library(tidyverse)
+library(readr)
+data_sleep <- as_tibble(msleep)
+summary(data_sleep)
+head(data_sleep)
+names(data_sleep)
+class(data_sleep)
+# 
+# 🟢 Best choice: Boxplot
+# # A boxplot is ideal because it:
+# # Shows distribution & spread (median, IQR, outliers)
+# # Compares multiple categories
+# # Handles numeric vs categorical relationships perfectly
+
+ggplot(data_sleep, aes(x = vore, y = sleep_total, fill = vore)) +
+  geom_boxplot() +
+  labs(
+    title = "Distribution of Total Sleep Time by Diet Type",
+    x = "Diet Category (vore)",
+    y = "Total Sleep (hours per day)"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# 🧠 Step 4: Interpretation
+# # From this plot, you can easily see:
+# # Which diet group sleeps the most or least
+# # How variable sleep times are within each group
+# # Whether distributions overlap or differ significantly
+# # Typically (from this dataset):
+# # Herbivores tend to sleep less
+# # Carnivores and insectivores sleep more
+# # Omnivores are in between
+
+# improve by adding data points - 1️⃣ Add individual data points (to see spread better)
+ggplot(msleep, aes(x = vore, y = sleep_total, fill = vore)) +
+  geom_boxplot(alpha = 0.6) +
+  geom_jitter(width = 0.2, alpha = 0.6, color = "black") +
+  labs(
+    title = "Spread of Total Sleep Time by Diet Type",
+    x = "Diet Category",
+    y = "Total Sleep (hours)"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# 2️⃣ Use a violin plot for a smooth shape view
+
+ggplot(msleep, aes(x = vore, y = sleep_total, fill = vore)) +
+  geom_violin(trim = FALSE) +
+  geom_boxplot(width = 0.1, fill = "white") +
+  labs(
+    title = "Spread of Total Sleep Time by Diet Type",
+    x = "Diet Category",
+    y = "Total Sleep (hours)"
+  ) +
+  theme_minimal()
+
 
 ```
 
 3.  Load the titanic dataset. This can be installed using `install.packages("titanic")` and loaded with the `library()` function. After that, the dataset you want is called `titanic_train`. Choose an appropriate visualisation to show the distribution of ages on the titanic dataset.
 
 ```{r}
+#install.packages("titanic")   # Run this once
+#library(titanic)
+data_tit <- (titanic_train)
+
+# summary(data_tit)
+# head(data_tit)
+# names(data_tit)
+# sum(is.na(data_tit$Age))
+# class(data_tit)
+
+
+# library(ggplot2)
+
+# Option 1 - hiOption 1 - stogram
+# What it shows:
+# # Frequency of passengers in each age range (e.g., 0–5, 6–10, …).
+# # You’ll see a peak around ages 20–35, meaning most passengers were young adults.
+# Some passengers are missing ages (NA values).
+ggplot(data_tit, aes(x = Age)) +
+  geom_histogram(binwidth = 5, fill = "skyblue", color = "black", na.rm = TRUE) +
+  labs(
+    title = "Distribution of Passenger Ages on the Titanic",
+    x = "Age (years)",
+    y = "Number of Passengers"
+  ) +
+  theme_minimal()
+
+# Option 2 - Density PLot
+# What it shows:
+# # Smooth curve showing the probability density of ages.
+# # Easier to compare if you later group by gender or survival.
+ggplot(data_tit, aes(x = Age)) +
+  geom_density(fill = "lightgreen", alpha = 0.6, na.rm = TRUE) +
+  labs(
+    title = "Density of Passenger Ages on the Titanic",
+    x = "Age (years)",
+    y = "Density"
+  ) +
+  theme_minimal()
+# Option 3 - : Boxplot – shows spread, median, and outliers
+# What it shows:
+# Median age, interquartile range (IQR), and any extreme ages (children or elderly).
+ggplot(data_tit, aes(y = Age)) +
+  geom_boxplot(fill = "orange", outlier.color = "red", na.rm = TRUE) +
+  labs(
+    title = "Spread of Passenger Ages on the Titanic",
+    y = "Age (years)"
+  ) +
+  theme_minimal()
+
+# option 4 - Compare by Group i.e. first oen here is sex male female
+  
+  ggplot(data_tit, aes(x = Sex, y = Age, fill = Sex)) +
+  geom_boxplot(na.rm = TRUE) +
+  labs(
+    title = "Distribution of Passenger Ages by Sex",
+    x = "Sex",
+    y = "Age (years)"
+  ) +
+  theme_minimal()
+
+# or OOption 4 A - order by group  - second one here is survived factor yes or no 
+ggplot(data_tit, aes(x = factor(Survived), y = Age, fill = factor(Survived))) +
+  geom_boxplot(na.rm = TRUE) +
+  labs(
+    title = "Distribution of Passenger Ages by Survival Status",
+    x = "Survived (0 = No, 1 = Yes)",
+    y = "Age (years)"
+  ) +
+  theme_minimal()
+
+# ✅ Step 4: Summary of the best choice
+# Goal	Visualization	Why
+# Show overall distribution of a numeric variable	Histogram	Most intuitive for spread & frequency
+# Show smooth shape of distribution	Density plot	Highlights modes and skewness
+# Show median, spread & outliers	Boxplot	Compact summary of variability
+
+ggplot(data_tit, aes(x = Age)) +
+  geom_histogram(binwidth = 5, fill = "skyblue", color = "black", na.rm = TRUE) +
+  labs(
+    title = "Distribution of Passenger Ages on the Titanic",
+    x = "Age (years)",
+    y = "Number of Passengers"
+  ) +
+  theme_minimal()
 
 ```
 
 4.  Using the titanic dataset show how the likelihood of survival depends on gender and on class.
 
 ```{r}
+# aggregate data
+aggregate(Survived ~ Sex + Pclass, data = data_tit, mean)
+
+
+# ✅ So survival was: 9from thetable produced from above
+# # Much higher for females (especially in 1st & 2nd class)
+# # Much lower for males, especially 3rd class passengers
+
+# 📊 Step 3: Visualize with ggplot2
+# Let’s show this clearly.
+# Option 1: Bar plot of survival rates by gender and class
+# > Interpretation of plto below:
+# The y-axis shows proportion survived (not counts).
+# Each bar adds up to 100%.
+# You’ll see that female passengers, especially in 1st and 2nd class, had the highest survival rates.
+
+ggplot(data_tit, aes(x = Sex, fill = factor(Survived))) +
+  geom_bar(position = "fill") +
+  facet_wrap(~ Pclass) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "Likelihood of Survival by Gender and Passenger Class",
+    x = "Gender",
+    y = "Survival Rate (percentage)",
+    fill = "Survived"
+  ) +
+  theme_minimal()
+
+# Option 2: Grouped bar plot of mean survival
+# 
+# This one shows exact proportions per group.
+# Interpretation:
+# Bars show probability of survival.
+# You can directly compare males vs females within each class.
+library(dplyr)
+
+survival_summary <- data_tit %>%
+  group_by(Sex, Pclass) %>%
+  summarise(SurvivalRate = mean(Survived, na.rm = TRUE))
+
+# Plot
+ggplot(survival_summary, aes(x = factor(Pclass), y = SurvivalRate, fill = Sex)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "Survival Rate by Gender and Passenger Class",
+    x = "Passenger Class",
+    y = "Survival Rate",
+    fill = "Gender"
+  ) +
+  theme_minimal()
+
+
+# 🧩 Step 4: Key takeaway
+# Group	Survival Rate (approx.)	Interpretation
+# Female, 1st Class	~97%	Almost all survived
+# Female, 2nd Class	~92%	Very high survival
+# Female, 3rd Class	~50%	Half survived
+# Male, 1st Class	~37%	Some survived
+# Male, 2nd Class	~15%	Low survival
+# Male, 3rd Class	~13%	Very low survival
+# ✅ Step 5: Summary of visualization options
+# Goal	Visualization	Best for Compare survival proportions visually	Stacked proportional bar chart (position="fill")	Easiest to interpret
+# Show numeric survival rates by group	Grouped bar plot	Cleaner, exact values
+# Summarize data numerically	aggregate() or dplyr::summarise()	Quick overview
+
 
 ```
 
@@ -141,10 +668,181 @@ data <- USArrests
 
 ```{r}
 
+data_dmd <- as_tibble(diamonds)
+summary(data_dmd)
+head(data_dmd)
+names(data_dmd)
+class(data_dmd)
+glimpse(data_dmd)
+
+# ✅ Step 2: Create a scatter plot
+## A scatter plot is ideal for showing the relationship between two numeric variables.
+# # We’ll add two geoms:
+# # geom_point() → raw data points
+# # geom_smooth() → fitted trend line (linear or otherwise)
+
+# 
+# 🔍 Step 3: Interpretation
+# You’ll notice:
+# There’s a strong positive relationship: as carat increases, price increases.
+# However, it’s not perfectly linear — the price increases faster than linearly for larger diamonds (a curved or exponential pattern).
+# So, while a straight line (method = "lm") captures the general trend, it doesn’t fit the curvature well.
+
+ggplot(diamonds, aes(x = carat, y = price)) +
+  geom_point(alpha = 0.3, color = "steelblue") +   # scatter plot
+  geom_smooth(method = "lm", color = "red", se = FALSE) +  # linear trend line
+  labs(
+    title = "Relationship between Diamond Carat and Price",
+    x = "Carat",
+    y = "Price (USD)"
+  ) +
+  theme_minimal()
+
+# 🟣 Step 4: Try a non-linear smoother for comparison
+ggplot(diamonds, aes(x = carat, y = price)) +
+  geom_point(alpha = 0.3, color = "skyblue") +
+  geom_smooth(method = "loess", color = "darkred", se = FALSE) +
+  labs(
+    title = "Non-linear Fit: Carat vs Price",
+    x = "Carat",
+    y = "Price (USD)"
+  ) +
+  theme_minimal()
+
+# 🧮 Optional: Quantify linearity
+# You can test linearity with a model:
+# model <- lm(price ~ carat, data = diamonds)
+# summary(model)
+
+
+# 📊 Step 5: (Optional) Use log transformation to check proportionality
+# If you transform both variables using log, the relationship becomes closer to linear:
+
+ggplot(diamonds, aes(x = log(carat), y = log(price))) +
+  geom_point(alpha = 0.3, color = "darkgreen") +
+  geom_smooth(method = "lm", color = "red", se = FALSE) +
+  labs(
+    title = "Log-Transformed Relationship between Carat and Price",
+    x = "log(Carat)",
+    y = "log(Price)"
+  ) +
+  theme_minimal()
+
+# !!!!  ✅ The log–log plot shows a more linear relationship, suggesting that price grows exponentially with carat.!!!!!!
+# 
+# ✅ Final Summary
+# Visualization	Geoms Used	What it shows
+# Scatter + Linear fit	geom_point() + geom_smooth(method="lm")	Strong positive but not perfectly linear
+# Scatter + LOESS smooth	geom_point() + geom_smooth(method="loess")	Captures curved, exponential-like trend
+# Log–log plot	same geoms but with log() axes	Relationship becomes approximately linear
+
+# ✍️ Interpretation:
+# 
+# There is a strong positive relationship between carat and price,
+# but it is non-linear — the price increases more sharply as carat grows.
+# In other words, larger diamonds cost disproportionately more.
+
+ggplot(diamonds, aes(x = carat, y = price)) +
+  geom_point(alpha = 0.3, color = "skyblue") +
+  geom_smooth(method = "lm", color = "red", se = FALSE) +
+  labs(
+    title = "Carat vs Price: Relationship in the Diamonds Dataset",
+    x = "Carat",
+    y = "Price (USD)"
+  ) +
+  theme_minimal()
+
+
 ```
 
-6.  Repeat the previous visualisation but show one graph for each different type of cut.
+6.  Repeat the previous visualisation but show one graph for each different type of cut. - Facetg by cut
 
 ```{r}
+# 🧠 Step 1: Recall the previous visualization
+# # We used:
+# # geom_point() + geom_smooth(method = "lm")
+# # to show carat vs. price with both raw data and a trend line.
+# # Now we’ll use faceting in ggplot2 to create one panel (graph) per cut type.
+
+# ✅ Step 2: Code — facet by cut
+
+ggplot(diamonds, aes(x = carat, y = price)) +
+  geom_point(alpha = 0.3, color = "skyblue") +         # scatter plot
+  geom_smooth(method = "lm", color = "red", se = FALSE) +  # linear fit
+  facet_wrap(~ cut) +                                  # one plot per cut type
+  labs(
+    title = "Option 2 - Relationship Between Carat and Price by Diamond Cut",
+    x = "Carat",
+    y = "Price (USD)"
+  ) +
+  theme_minimal()
+# 
+# 💡 Step 3: What this does
+## facet_wrap(~ cut) creates separate subplots — one for each diamond cut.
+#  Each subplot shows its own carat–price relationship.
+#  You can visually compare:
+# # Whether the slope differs by cut (i.e., how quickly price rises with carat)
+# # Whether the spread of prices differs across quality grades
+
+# 🔍 Step 4: Interpretation
+# 
+# When you run this, you’ll typically see:
+# 
+# Cut Type	Pattern Observed
+# Fair	More variability; lower prices for a given carat
+# Good / Very Good	Slightly higher prices and more consistent
+# Premium / Ideal	Steeper relationship — price increases faster with carat size
+# 
+# So, higher-quality cuts tend to have a stronger price premium per carat — prices rise more sharply for Ideal and Premium cuts.
+# 
+
+
+# 🟢 Step 5: Optional — Use LOESS for non-linear trend
+# 
+# If you want to capture the curved (non-linear) relationship better:
+
+ggplot(diamonds, aes(x = carat, y = price)) +
+  geom_point(alpha = 0.3, color = "skyblue") +
+  geom_smooth(method = "loess", color = "darkred", se = FALSE) +
+  facet_wrap(~ cut) +
+  labs(
+    title = "Option 5 - Non-linear Relationship Between Carat and Price by Cut",
+    x = "Carat",
+    y = "Price (USD)"
+  ) +
+  theme_minimal()
+
+# ✅ Step 6: Optional Enhancement — color by cut (single plot version)
+# 
+# If you’d rather overlay all cuts in one plot for comparison:
+
+ggplot(diamonds, aes(x = carat, y = price, color = cut)) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "option 6 - Carat vs Price by Cut Type",
+    x = "Carat",
+    y = "Price (USD)"
+  ) +
+  theme_minimal()
+
+# ✅ Final Answer (recommended version)
+ggplot(diamonds, aes(x = carat, y = price)) +
+  geom_point(alpha = 0.3, color = "skyblue") +
+  geom_smooth(method = "lm", color = "red", se = FALSE) +
+  facet_wrap(~ cut) +
+  labs(
+    title = "Rec final answer - Relationship Between Carat and Price by Diamond Cut",
+    x = "Carat",
+    y = "Price (USD)"
+  ) +
+  theme_minimal()
+
+
+# ✍️ Interpretation:
+# 
+# Across all cuts, price increases with carat, but the relationship is non-linear (steeper for higher carats).
+# Diamonds with higher cut quality (Ideal, Premium) tend to have higher prices at the same carat weight, and a steeper price–carat slope, reflecting quality premiums.
+
 
 ```

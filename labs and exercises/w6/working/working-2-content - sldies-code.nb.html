@@ -1752,213 +1752,102 @@ display: none;
 
 
 <!-- rnb-text-begin -->
-<div id="summary-statistics-lecture-practical" class="section level1">
-<h1>Summary Statistics Lecture Practical</h1>
-<p>This notebook can be used to follow along with the lecture notes.</p>
+<p>This is an <a href="http://rmarkdown.rstudio.com">R Markdown</a>
+Notebook. When you execute code within the notebook, the results appear
+beneath the code.</p>
+<p>Try executing this chunk by clicking the <em>Run</em> button within
+the chunk or by placing your cursor inside it and pressing
+<em>Ctrl+Shift+Enter</em>.</p>
+<div id="task-7--summary-statistics---answer" class="section level1">
+<h1>Task 7- Summary Statistics - answer</h1>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-output-begin eyJkYXRhIjoiXG48IS0tIHJuYi1zb3VyY2UtYmVnaW4gZXlKa1lYUmhJam9pWUdCZ2NseHVJeUJFYjNkdWJHOWhaQ0IwYUdVZ1ltRnVheTU2YVhBZ1ptbHNaU0JtY205dElHSnlhV2RvZEhOd1lXTmxYRzUxY213Z1BDMGdKMmgwZEhBNkx5OWhjbU5vYVhabExtbGpjeTUxWTJrdVpXUjFMMjFzTDIxaFkyaHBibVV0YkdWaGNtNXBibWN0WkdGMFlXSmhjMlZ6THpBd01qSXlMMkpoYm1zdWVtbHdKMXh1Wkc5M2JteHZZV1F1Wm1sc1pTaDFjbXdzSUdSbGMzUm1hV3hsSUQwZ0oySmhibXN1ZW1sd0p5bGNibUJnWUNKOSAtLT5cblxuYGBgclxuIyBEb3dubG9hZCB0aGUgYmFuay56aXAgZmlsZSBmcm9tIGJyaWdodHNwYWNlXG51cmwgPC0gJ2h0dHA6Ly9hcmNoaXZlLmljcy51Y2kuZWR1L21sL21hY2hpbmUtbGVhcm5pbmctZGF0YWJhc2VzLzAwMjIyL2JhbmsuemlwJ1xuZG93bmxvYWQuZmlsZSh1cmwsIGRlc3RmaWxlID0gJ2JhbmsuemlwJylcbmBgYFxuXG48IS0tIHJuYi1zb3VyY2UtZW5kIC0tPlxuIn0= -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBEb3dubG9hZCB0aGUgYmFuay56aXAgZmlsZSBmcm9tIGJyaWdodHNwYWNlXG51cmwgPC0gJ2h0dHA6Ly9hcmNoaXZlLmljcy51Y2kuZWR1L21sL21hY2hpbmUtbGVhcm5pbmctZGF0YWJhc2VzLzAwMjIyL2JhbmsuemlwJ1xuZG93bmxvYWQuZmlsZSh1cmwsIGRlc3RmaWxlID0gJ2JhbmsuemlwJylcbmBgYCJ9 -->
-<pre class="r"><code># Download the bank.zip file from brightspace
-url &lt;- &#39;http://archive.ics.uci.edu/ml/machine-learning-databases/00222/bank.zip&#39;
-download.file(url, destfile = &#39;bank.zip&#39;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-end -->
-<!-- rnb-output-begin eyJkYXRhIjoidHJ5aW5nIFVSTCAnaHR0cDovL2FyY2hpdmUuaWNzLnVjaS5lZHUvbWwvbWFjaGluZS1sZWFybmluZy1kYXRhYmFzZXMvMDAyMjIvYmFuay56aXAnXG5kb3dubG9hZGVkIDU2NSBLQlxuIn0= -->
-<pre><code>trying URL &#39;http://archive.ics.uci.edu/ml/machine-learning-databases/00222/bank.zip&#39;
-downloaded 565 KB</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiXG48IS0tIHJuYi1zb3VyY2UtYmVnaW4gZXlKa1lYUmhJam9pWUdCZ2NseHVkVzU2YVhBb0oySmhibXN1ZW1sd0p5d2diR2x6ZENBOUlGUXBYRzVnWUdBaWZRPT0gLS0+XG5cbmBgYHJcbnVuemlwKCdiYW5rLnppcCcsIGxpc3QgPSBUKVxuYGBgXG5cbjwhLS0gcm5iLXNvdXJjZS1lbmQgLS0+XG4ifQ== -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudW56aXAoJ2JhbmsuemlwJywgbGlzdCA9IFQpXG5gYGAifQ== -->
-<pre class="r"><code>unzip(&#39;bank.zip&#39;, list = T)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiXG48IS0tIHJuYi1mcmFtZS1iZWdpbiBleUp0WlhSaFpHRjBZU0k2ZXlKamJHRnpjMlZ6SWpwYkltUmhkR0V1Wm5KaGJXVWlYU3dpYm5KdmR5STZNeXdpYm1OdmJDSTZNeXdpYzNWdGJXRnllU0k2ZXlKRVpYTmpjbWx3ZEdsdmJpSTZXeUprWmlCYk15RERseUF6WFNKZGZYMHNJbkprWmlJNklrZzBjMGxCUVVGQlFVRkJRVUp0VmxOMU1EZEVUVUpUT1dWYVdrZERhVU40T0dkV1NXbFZRWE5xUmxKVlUwRnFSVzgzVWxOV2FtUjRNbmRxYWxKSmEwUldVMlJIVW1saGJXbHJMMmRWTjNJd1puZHhNbGw1VUZabFRHNVlOVGMzVHpobVYyZHVOWGRIVTFGQlFVUnlhV1ZDV1RkSVdHWkNSM2M0ZG05RVRVTXhLMk5WUTBZM2NrTjZibTVUWjJOM1JUSkhPSEphUTBGalNTOXZWVlJTY0VNMGNsSXJWV1ZEZFVKRGJEWjRibGhOTld0NWFFOTNTMVpYVkhoRWRFOW5PV1pHTmt4cFpXWm1lRGhLUVRjdlJHOVlWSEpuZEZCSU1XRjJhMmc0VUZoeFlUbEVZVnBUV0dwWE9YazRiRXRETmxaeWVITkNXR0oxTjNnMmRtdHNWRkE1ZFZkV2JWcFdjMVZXUTNOTGFsaHZha2xaV0ROSGVrMVlRMjVJVlU4dlpXTnNRMUIxVFVZd2VXMVpOakJyWTAxSGVUSTJWbVpGWVRaNllXaEpVSFZ0TlV4aFNqbHZPVUpLWTJkUlVTOUhhMFZyVUN0TksyOVZTbU56VEhsd2RscFphazhyVlZkNFZrSnlSRmhWUkVVNGFUbEtXbmM1WkhwWmRXOTFObFpVVFd4R1FqZFJkVlUzTWpjMVp6UlhjWFYyY0dKUU1XVmtWVkEwV2tnd1FtZFVNMVJ1UkdaNkswUlFNRWczVERodmNYQXpiemRCVldZMVZIbHJXVEJwVmtKWGFFTk9VMDlYZHl0UlZXTXZPVUlyY21kSlFVRkJQVDBpZlE9PSAtLT5cblxuPGRpdiBkYXRhLXBhZ2VkdGFibGU9XCJmYWxzZVwiPlxuICA8c2NyaXB0IGRhdGEtcGFnZWR0YWJsZS1zb3VyY2UgdHlwZT1cImFwcGxpY2F0aW9uL2pzb25cIj5cbntcImNvbHVtbnNcIjpbe1wibGFiZWxcIjpbXCJOYW1lXCJdLFwibmFtZVwiOlsxXSxcInR5cGVcIjpbXCJjaHJcIl0sXCJhbGlnblwiOltcImxlZnRcIl19LHtcImxhYmVsXCI6W1wiTGVuZ3RoXCJdLFwibmFtZVwiOlsyXSxcInR5cGVcIjpbXCJkYmxcIl0sXCJhbGlnblwiOltcInJpZ2h0XCJdfSx7XCJsYWJlbFwiOltcIkRhdGVcIl0sXCJuYW1lXCI6WzNdLFwidHlwZVwiOltcIlMzOiBQT1NJWGN0XCJdLFwiYWxpZ25cIjpbXCJyaWdodFwiXX1dLFwiZGF0YVwiOlt7XCIxXCI6XCJiYW5rLWZ1bGwuY3N2XCIsXCIyXCI6XCI0NjEwMzQ4XCIsXCIzXCI6XCIyMDEyLTAyLTE0IDE0OjQwOjAwXCJ9LHtcIjFcIjpcImJhbmstbmFtZXMudHh0XCIsXCIyXCI6XCIzODY0XCIsXCIzXCI6XCIyMDEyLTAyLTE0IDE1OjEwOjAwXCJ9LHtcIjFcIjpcImJhbmsuY3N2XCIsXCIyXCI6XCI0NjE0NzRcIixcIjNcIjpcIjIwMTItMDItMTQgMTQ6Mzg6MDBcIn1dLFwib3B0aW9uc1wiOntcImNvbHVtbnNcIjp7XCJtaW5cIjp7fSxcIm1heFwiOlsxMF0sXCJ0b3RhbFwiOlszXX0sXCJyb3dzXCI6e1wibWluXCI6WzEwXSxcIm1heFwiOlsxMF0sXCJ0b3RhbFwiOlszXX0sXCJwYWdlc1wiOnt9fX1cbiAgPFwvc2NyaXB0PlxuPFwvZGl2PlxuXG48IS0tIHJuYi1mcmFtZS1lbmQgLS0+XG4ifQ== -->
-<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImRhdGEuZnJhbWUiXSwibnJvdyI6MywibmNvbCI6Mywic3VtbWFyeSI6eyJEZXNjcmlwdGlvbiI6WyJkZiBbMyDDlyAzXSJdfX0sInJkZiI6Ikg0c0lBQUFBQUFBQUJtVlN1MDdETUJTOWVaWkdDaUN4OGdWSWlVQXNqRlJVU0FqRW83UlNWamR4MndqalJJa0RWU2RHUmlhbWlrL2dVN3IwZndxMll5UFZlTG5YNTc3TzhmV2duNXdHU1FBQURyaWVCWTdIWGZCR3c4dm9ETUMxK2NVQ0Y3ckN6bm5TZ2N3RTJHOHJaQ0FjSS9vVVRScEM0clIrVWVDdUJDbDZ4blhNNWt5aE93S1ZXVHhEdE9nOWZGNkxpZWZmeDhKQTcvRG9YVHJndFBIMWF2a2g4UFhxYTlEYVpTWGpXOXk4bEtDNlZyeHNCWGJ1N3g2dmtsVFA5dVdWbVpWc1VWQ3NLalhvaklZWDNHek1YQ25IVU8vZWNsQ1B1TUYweW1ZNjBrY01HeTI2VmZFYTZ6YWhJUHVtNUxhSjlvOUJKY2dRUS9Ha0VrUCtNK29VSmNzTHlwdlpZak8rVVd4VkJyRFhVREU4aTlKWnc5ZHpZdW91NlZUTWxGQjdRdVU3Mjc1ZzRXcXV2cGJQMWVkVVA0WkgwQmdUM1RuRGZ6K0RQMEg3TDhvcXAzbzdBVWY1VHlrWTBpVkJXaENOU09XdytRVWMvOUIrcmdJQUFBPT0ifQ== -->
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":["Name"],"name":[1],"type":["chr"],"align":["left"]},{"label":["Length"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Date"],"name":[3],"type":["S3: POSIXct"],"align":["right"]}],"data":[{"1":"bank-full.csv","2":"4610348","3":"2012-02-14 14:40:00"},{"1":"bank-names.txt","2":"3864","3":"2012-02-14 15:10:00"},{"1":"bank.csv","2":"461474","3":"2012-02-14 14:38:00"}],"options":{"columns":{"min":{},"max":[10],"total":[3]},"rows":{"min":[10],"max":[10],"total":[3]},"pages":{}}}
-  </script>
-</div>
-<!-- rnb-frame-end -->
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<div id="data-description" class="section level2">
-<h2>Data Description</h2>
-<div id="numeric-data" class="section level3">
-<h3>Numeric Data</h3>
-<ol style="list-style-type: decimal">
-<li>age</li>
-<li>balance</li>
-<li>contact day</li>
-<li>duration</li>
-<li>campaign contacts</li>
-<li>previous contacts</li>
-<li>previous days (-1, no previous contact)</li>
-</ol>
-</div>
-<div id="categorical-data" class="section level3">
-<h3>Categorical Data</h3>
-<ol style="list-style-type: decimal">
-<li>job (11) { ’admin’, ’entrepreneur’. . . }</li>
-<li>marital (3) { ’divorced’, ’married’, ’single’ }</li>
-<li>education (3) { ’primary’, ’secondary’. . . }</li>
-<li>default (2) { ’yes’, ’no’ }</li>
-<li>housing loan (2) { ’yes’, ’no’ }</li>
-<li>Personal loan (2) { ’yes’, ’no’ }</li>
-<li>contact type (2) { ’telephone’, ’cellular’ }</li>
-<li>contact month (12) { ’jan’, ’feb’. . . }</li>
-<li>previous outcome (3) { ’success’, ’failure’. . . }</li>
-<li>subscribed (2) { ’yes’, ’no’ }</li>
-</ol>
-</div>
-</div>
-<div id="task-1-import-the-data-into-r" class="section level2">
-<h2>Task 1: Import the data into R</h2>
-<p>Make sure you run the initial steps in the cell above to download and
-unzip the dataset. Then import the data into R, you may need to manually
-inspect the dataset to get an idea of the format. Save the dataframe in
-a variable called bankData.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="task-2-basic-checks" class="section level2">
-<h2>Task 2: Basic Checks</h2>
-<p>Before we get to work on the dataframe we want to perform some basic
-checks. First, get an idea of the size of the dataset by checking the
-number of columns and rows. Then double check the first few and last few
-rows of the dataframe to make sure there were no problems with the
-import</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="task-3-type-conversion" class="section level2">
-<h2>Task 3: Type Conversion</h2>
-<p>By default, read_delim reads character columns as characters, but all
-of our character columns should be factors. Manually convert columns
-2,3,4 and 5 to factors below</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-output-begin eyJkYXRhIjoiXG48IS0tIHJuYi1zb3VyY2UtYmVnaW4gZXlKa1lYUmhJam9pWUdCZ2NseHVkVzU2YVhBb0oySmhibXN1ZW1sd0p5d2daWGhrYVhJOUp5NHZZbUZ1YTBSaGRHRW5LVnh1YkdsaWNtRnllU2h5WldGa2NpbGNibUpoYm10RVlYUmhJRHd0SUhKbFlXUmZaR1ZzYVcwb0p5NHZZbUZ1YTBSaGRHRXZZbUZ1YXkxbWRXeHNMbU56ZGljc0lHUmxiR2x0UFNjN0p5d2dibUU5WXlnbmRXNXJibTkzYmljcExDQm5kV1Z6YzE5dFlYZzlOVEF3TURBcFhHNWNibUJnWUNKOSAtLT5cblxuYGBgclxudW56aXAoJ2JhbmsuemlwJywgZXhkaXI9Jy4vYmFua0RhdGEnKVxubGlicmFyeShyZWFkcilcbmJhbmtEYXRhIDwtIHJlYWRfZGVsaW0oJy4vYmFua0RhdGEvYmFuay1mdWxsLmNzdicsIGRlbGltPSc7JywgbmE9YygndW5rbm93bicpLCBndWVzc19tYXg9NTAwMDApXG5cbmBgYFxuXG48IS0tIHJuYi1zb3VyY2UtZW5kIC0tPlxuIn0= -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudW56aXAoJ2JhbmsuemlwJywgZXhkaXI9Jy4vYmFua0RhdGEnKVxubGlicmFyeShyZWFkcilcbmJhbmtEYXRhIDwtIHJlYWRfZGVsaW0oJy4vYmFua0RhdGEvYmFuay1mdWxsLmNzdicsIGRlbGltPSc7JywgbmE9YygndW5rbm93bicpLCBndWVzc19tYXg9NTAwMDApXG5cbmBgYCJ9 -->
-<pre class="r"><code>unzip(&#39;bank.zip&#39;, exdir=&#39;./bankData&#39;)
-library(readr)
-bankData &lt;- read_delim(&#39;./bankData/bank-full.csv&#39;, delim=&#39;;&#39;, na=c(&#39;unknown&#39;), guess_max=50000)
+<!-- rnb-output-begin eyJkYXRhIjoiXG48IS0tIHJuYi1zb3VyY2UtYmVnaW4gZXlKa1lYUmhJam9pWUdCZ2NseHVYRzV5WVc1a2IyMHVaR0YwWVNBOElDMG9NVFFzSURFMUxDQTVMQ0E0TENBMkxDQTNMQ0E0TENBeE1pbGNibk52Y25SbFpDNWtZWFJoSUR3dElITnZjblFvY21GdVpHOXRMbVJoZEdFcFhHNXpiM0owWldRdVpHRjBZVnh1WEc1d1pYSmpaVzUwYVd4bExtbHVaR1Y0SUR3dElHTmxhV3hwYm1jb2JHVnVaM1JvS0hOdmNuUmxaQzVrWVhSaEtTQXFJREF1TVNsY2JuUmxiblJvTG5CbGNtTmxiblJwYkdVZ1BDMGdjMjl5ZEdWa0xtUmhkR0ZiVzNCbGNtTmxiblJwYkdVdWFXNWtaWGhkWFZ4dVhHNTBaVzUwYUM1d1pYSmpaVzUwYVd4bFhHNWNibVp2Y2lBb2FTQnBiaUJES0RBdU15d2dNQzQxTENBd0xqYzFLU2tnZTF4dUlDQnBibVJsZUNBOExTQmpaV2xzYVc1bktHeGxibWQwYUNoemIzSjBaV1F1WkdGMFlTa2dLaUJwS1Z4dUlDQjJZV3gxWlNBOExTQnpiM0owWldRdVpHRjBZVnRiYVc1a1pYaGRYVnh1SUNCd2NtbHVkQ2h3WVhOMFpUQW9YQ0pVYUdVZ1hDSXNJR2tnS2lBeE1EQXNJRndpZEdnZ2NHVnlZMlZ1ZEdsc1pTQnBjeUJjSWl3Z2RtRnNkV1VwWEc0Z0lDQWdJQ0FnSUZ4dWZWeHVYRzVtYjNJZ0tHa2dhVzRnUXlnd0xqTXNJREF1TlN3Z01DNDNOU2twZTF4dUlDQWdJSEJ5YVc1MEtIQmhjM1JsTUNoY0lsUm9aU0JjSWl3Z2FTQXFJREV3TUN3Z1hDSjBhQ0J3WlhKalpXNTBhV3hsSUdseklGd2lMQ0J4ZFdGdWRHbHNaU2h6YjNKMFpXUXVaR0YwWVN3Z2FTbGNiaUFnWEc1OVhHNWNibVp2Y2lBb2FTQnBiaUJES0RBdU15d2dNQzQxTENBd0xqYzFLU2w3WEc0Z0lDQWdjSEpwYm5Rb2NHRnpkR1V3S0Z3aVZHaGxJRndpTENCcElDb2dNVEF3TENCY0luUm9JSEJsY21ObGJuUnBiR1VnYVhNZ1hDSXNJSEYxWVc1MGFXeGxLSE52Y25SbFpDNWtZWFJoTENCcEtTd2dkSGx3WlNBOUlERXBLU2xjYmlBZ1hHNTlYRzVjYmx4dUl5Qm1hWFpsSUc0Z2RXMWlaWElnYzNWdGJXRnllU0FnTFNCeGRXRnVkR2xzWlhOY2JseHU0b0NZNG9DWjRvQ1pVbHh1Wm1sMlpXNTFiU2hpWVc1clJHRjBZU1JoWjJVcFhHN2lnSmppZ0puaWdKbGNibHh1WEc1Z1lHQWlmUT09IC0tPlxuXG5gYGByXG5cbnJhbmRvbS5kYXRhIDwgLSgxNCwgMTUsIDksIDgsIDYsIDcsIDgsIDEyKVxuc29ydGVkLmRhdGEgPC0gc29ydChyYW5kb20uZGF0YSlcbnNvcnRlZC5kYXRhXG5cbnBlcmNlbnRpbGUuaW5kZXggPC0gY2VpbGluZyhsZW5ndGgoc29ydGVkLmRhdGEpICogMC4xKVxudGVudGgucGVyY2VudGlsZSA8LSBzb3J0ZWQuZGF0YVtbcGVyY2VudGlsZS5pbmRleF1dXG5cbnRlbnRoLnBlcmNlbnRpbGVcblxuZm9yIChpIGluIEMoMC4zLCAwLjUsIDAuNzUpKSB7XG4gIGluZGV4IDwtIGNlaWxpbmcobGVuZ3RoKHNvcnRlZC5kYXRhKSAqIGkpXG4gIHZhbHVlIDwtIHNvcnRlZC5kYXRhW1tpbmRleF1dXG4gIHByaW50KHBhc3RlMChcIlRoZSBcIiwgaSAqIDEwMCwgXCJ0aCBwZXJjZW50aWxlIGlzIFwiLCB2YWx1ZSlcbiAgICAgICAgXG59XG5cbmZvciAoaSBpbiBDKDAuMywgMC41LCAwLjc1KSl7XG4gICAgcHJpbnQocGFzdGUwKFwiVGhlIFwiLCBpICogMTAwLCBcInRoIHBlcmNlbnRpbGUgaXMgXCIsIHF1YW50aWxlKHNvcnRlZC5kYXRhLCBpKVxuICBcbn1cblxuZm9yIChpIGluIEMoMC4zLCAwLjUsIDAuNzUpKXtcbiAgICBwcmludChwYXN0ZTAoXCJUaGUgXCIsIGkgKiAxMDAsIFwidGggcGVyY2VudGlsZSBpcyBcIiwgcXVhbnRpbGUoc29ydGVkLmRhdGEsIGkpLCB0eXBlID0gMSkpKVxuICBcbn1cblxuXG4jIGZpdmUgbiB1bWJlciBzdW1tYXJ5ICAtIHF1YW50aWxlc1xuXG7igJjigJnigJlSXG5maXZlbnVtKGJhbmtEYXRhJGFnZSlcbuKAmOKAmeKAmVxuXG5cbmBgYFxuXG48IS0tIHJuYi1zb3VyY2UtZW5kIC0tPlxuIn0= -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5yYW5kb20uZGF0YSA8IC0oMTQsIDE1LCA5LCA4LCA2LCA3LCA4LCAxMilcbnNvcnRlZC5kYXRhIDwtIHNvcnQocmFuZG9tLmRhdGEpXG5zb3J0ZWQuZGF0YVxuXG5wZXJjZW50aWxlLmluZGV4IDwtIGNlaWxpbmcobGVuZ3RoKHNvcnRlZC5kYXRhKSAqIDAuMSlcbnRlbnRoLnBlcmNlbnRpbGUgPC0gc29ydGVkLmRhdGFbW3BlcmNlbnRpbGUuaW5kZXhdXVxuXG50ZW50aC5wZXJjZW50aWxlXG5cbmZvciAoaSBpbiBDKDAuMywgMC41LCAwLjc1KSkge1xuICBpbmRleCA8LSBjZWlsaW5nKGxlbmd0aChzb3J0ZWQuZGF0YSkgKiBpKVxuICB2YWx1ZSA8LSBzb3J0ZWQuZGF0YVtbaW5kZXhdXVxuICBwcmludChwYXN0ZTAoXCJUaGUgXCIsIGkgKiAxMDAsIFwidGggcGVyY2VudGlsZSBpcyBcIiwgdmFsdWUpXG4gICAgICAgIFxufVxuXG5mb3IgKGkgaW4gQygwLjMsIDAuNSwgMC43NSkpe1xuICAgIHByaW50KHBhc3RlMChcIlRoZSBcIiwgaSAqIDEwMCwgXCJ0aCBwZXJjZW50aWxlIGlzIFwiLCBxdWFudGlsZShzb3J0ZWQuZGF0YSwgaSlcbiAgXG59XG5cbmZvciAoaSBpbiBDKDAuMywgMC41LCAwLjc1KSl7XG4gICAgcHJpbnQocGFzdGUwKFwiVGhlIFwiLCBpICogMTAwLCBcInRoIHBlcmNlbnRpbGUgaXMgXCIsIHF1YW50aWxlKHNvcnRlZC5kYXRhLCBpKSwgdHlwZSA9IDEpKSlcbiAgXG59XG5cblxuIyBmaXZlIG4gdW1iZXIgc3VtbWFyeSAgLSBxdWFudGlsZXNcblxu4oCY4oCZ4oCZUlxuZml2ZW51bShiYW5rRGF0YSRhZ2UpXG7igJjigJnigJlcblxuXG5gYGAifQ== -->
+<pre class="r"><code>
+random.data &lt; -(14, 15, 9, 8, 6, 7, 8, 12)
+sorted.data &lt;- sort(random.data)
+sorted.data
+
+percentile.index &lt;- ceiling(length(sorted.data) * 0.1)
+tenth.percentile &lt;- sorted.data[[percentile.index]]
+
+tenth.percentile
+
+for (i in C(0.3, 0.5, 0.75)) {
+  index &lt;- ceiling(length(sorted.data) * i)
+  value &lt;- sorted.data[[index]]
+  print(paste0(&quot;The &quot;, i * 100, &quot;th percentile is &quot;, value)
+        
+}
+
+for (i in C(0.3, 0.5, 0.75)){
+    print(paste0(&quot;The &quot;, i * 100, &quot;th percentile is &quot;, quantile(sorted.data, i)
+  
+}
+
+for (i in C(0.3, 0.5, 0.75)){
+    print(paste0(&quot;The &quot;, i * 100, &quot;th percentile is &quot;, quantile(sorted.data, i), type = 1)))
+  
+}
+
+
+# five n umber summary  - quantiles
+
+‘’’R
+fivenum(bankData$age)
+‘’’
 </code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Add a new chunk by clicking the <em>Insert Chunk</em> button on the
+toolbar or by pressing <em>Ctrl+Alt+I</em>.</p>
+<p>When you save the notebook, an HTML file containing the code and
+output will be saved alongside it (click the <em>Preview</em> button or
+press <em>Ctrl+Shift+K</em> to preview the HTML file).</p>
+<p>The preview shows you a rendered HTML copy of the contents of the
+editor. Consequently, unlike <em>Knit</em>, <em>Preview</em> does not
+run any R code chunks. Instead, the output of the chunk when it was last
+run in the editor is displayed.</p>
+</div>
+<div id="task-8---calculate-the-trimmed-mean" class="section level1">
+<h1>Task 8 - Calculate the trimmed mean</h1>
+<!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-output-begin eyJkYXRhIjoiXG48IS0tIHJuYi1zb3VyY2UtYmVnaW4gZXlKa1lYUmhJam9pWUdCZ2NseHVJMGhsWVdRb1ltRnVhMFJoZEdFcFhHNXdjbTlpYkdWdGN5aGlZVzVyUkdGMFlTbGNibUJnWUNKOSAtLT5cblxuYGBgclxuI0hlYWQoYmFua0RhdGEpXG5wcm9ibGVtcyhiYW5rRGF0YSlcbmBgYFxuXG48IS0tIHJuYi1zb3VyY2UtZW5kIC0tPlxuIn0= -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI0hlYWQoYmFua0RhdGEpXG5wcm9ibGVtcyhiYW5rRGF0YSlcbmBgYCJ9 -->
-<pre class="r"><code>#Head(bankData)
-problems(bankData)</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiXG48IS0tIHJuYi1zb3VyY2UtYmVnaW4gZXlKa1lYUmhJam9pWUdCZ2NseHVjbUYzTG0xbFlXNGdQQ0F0SUcxbFlXNG9ZbUZ1YTBSaGRHRWtZbUZzWVc1alpTbGNibkpoZHk1dFpXUnBZVzRnUENBdElHMWxaR2xoYmloaVlXNXJSR0YwWVNSaVlXeGhibU5sS1Z4dVhHNGpJR1p2Y2lCVVBTQXdMakVnZDJVZ2QyRnVkQ0IwYnlCeVpXMXZkbVVnZEdobElIUnZjQ0JoYm1RZ1ltOTBkRzl0SURFd0pTQnZaaUIwYUdVZ2RtRnNkV1Z6SUNnZ2FXNGdkR1Z5YlhNZ2IyWWdjMmw2WlNsY2JpTWdabWx5YzNRZ1kyRnNZM1ZzWVhSbElIUm9aU0IwWlc1MGFDQmhibVFnYm05dVpYUnBaWFJvSUhCbGNtTmxiblJwYkdWY2JseHVYRzUwWlc1MGFDNXdaWEpqWlc1MGFXeGxJRHd0SUhGMVlXNTBhV3hsS0dKaGJtdEVZWFJoSkdKaGJHRnVZMlVzSURBdU1TbGNibTVwYm1WMGFXVjBhQzV3WlhKalpXNTBhV3hsSUR3dEtHSmhibXRFWVhSaEpHSmhiR0Z1WTJVc01DNDVLVnh1WEc0aklIUm9aVzRnYzJWc1pXTjBJSFJvWlNCdmJteDVJSEp2ZDNNZ2QyaGxjbVVnWW1Gc1lXNWpaU0JwY3lCaVpYUjNaV1Z1SUhSb1pYTmxJSFIzYnlCMllXeDFaWE5jYm5SeWFXMXRaV1FnUEMwZ1ltRnVhMFJoZEdGYlltRnVhMFJoZEdFa1ltRnNZVzVqWlNBK0lIUmxiblJvTG5CbGNtTmxiblJwYkdVZ0ppQmlZVzVyUkdGMFlTUmlZV3hoYm1ObElEd2dibWx1ZEdsbGRHZ3VjR1Z5WTJWdWRHbHNaU3dnWFZ4dWRISnBiVzFsWkM1dFpXRnVJRHd0SUcxbFlXNG9kSEpwYlcxbFpDUmlZV3hoYm1ObEtWeHVkSEpwYlcxbFpDNXRaV0Z1WEc1Y2JpTWdkR2hsSUcxbFpHbGhiaUIyWVd4MVpTQnBjeUJsZUdGamRHeDVJR2x1SUhSb1pTQmpaVzUwY21VZ2IyWWdkR2hsSUdSaGRHRnpaWFF1SUZSb1pTQnpiV0ZzYkdWeUlIUm9aU0JrYVdabVpYSmxibU5sSUdKbGRIZGxaVzRnZEdobElHMWxZVzRnWVc1a0lIUm9aVnh1SXlCdFpXUnBZVzRnZEdobElHMXZjbVVnY21Wd2NtVnpaVzUwWVhScGRtVWdkR2hoZENCdFpXRnVJR2x6WEc1Y2JuSmhkeTVrYVdabVpYSmxibU5sSUR3dElHRmljeWh5WVhjdWJXVmthV0Z1SUMwZ2NtRjNMbTFsWVc0cFhHNTBjbWx0YldWa0xtUnBabVpsY21WdVkyVWdQQzBnWVdKektISmhkeTV0WldScFlXNGdMU0IwY21sdGJXVmtMbTFsWVc0cFhHNWNibkJ5YVc1MEtIQmhjM1JsS0Z3aVVtRjNJR1JwWm1abGNtVnVZMlVnYVhNZ1hDSWdMQ0J5WVhjdVpHbG1abVZ5Wlc1alpTa3BYRzV3Y21sdWRDaHdZWE4wWlNoY0lpQlVjbWx0YldWa0lHUnBabVpsY21WdVkyVWdhWE1nWENJZ2RISnBiVzFsWkM1a2FXWm1aWEpsYm1ObEtTbGNibHh1WEc1Y2JseHVZR0JnSW4wPSAtLT5cblxuYGBgclxucmF3Lm1lYW4gPCAtIG1lYW4oYmFua0RhdGEkYmFsYW5jZSlcbnJhdy5tZWRpYW4gPCAtIG1lZGlhbihiYW5rRGF0YSRiYWxhbmNlKVxuXG4jIGZvciBUPSAwLjEgd2Ugd2FudCB0byByZW1vdmUgdGhlIHRvcCBhbmQgYm90dG9tIDEwJSBvZiB0aGUgdmFsdWVzICggaW4gdGVybXMgb2Ygc2l6ZSlcbiMgZmlyc3QgY2FsY3VsYXRlIHRoZSB0ZW50aCBhbmQgbm9uZXRpZXRoIHBlcmNlbnRpbGVcblxuXG50ZW50aC5wZXJjZW50aWxlIDwtIHF1YW50aWxlKGJhbmtEYXRhJGJhbGFuY2UsIDAuMSlcbm5pbmV0aWV0aC5wZXJjZW50aWxlIDwtKGJhbmtEYXRhJGJhbGFuY2UsMC45KVxuXG4jIHRoZW4gc2VsZWN0IHRoZSBvbmx5IHJvd3Mgd2hlcmUgYmFsYW5jZSBpcyBiZXR3ZWVuIHRoZXNlIHR3byB2YWx1ZXNcbnRyaW1tZWQgPC0gYmFua0RhdGFbYmFua0RhdGEkYmFsYW5jZSA+IHRlbnRoLnBlcmNlbnRpbGUgJiBiYW5rRGF0YSRiYWxhbmNlIDwgbmludGlldGgucGVyY2VudGlsZSwgXVxudHJpbW1lZC5tZWFuIDwtIG1lYW4odHJpbW1lZCRiYWxhbmNlKVxudHJpbW1lZC5tZWFuXG5cbiMgdGhlIG1lZGlhbiB2YWx1ZSBpcyBleGFjdGx5IGluIHRoZSBjZW50cmUgb2YgdGhlIGRhdGFzZXQuIFRoZSBzbWFsbGVyIHRoZSBkaWZmZXJlbmNlIGJldHdlZW4gdGhlIG1lYW4gYW5kIHRoZVxuIyBtZWRpYW4gdGhlIG1vcmUgcmVwcmVzZW50YXRpdmUgdGhhdCBtZWFuIGlzXG5cbnJhdy5kaWZmZXJlbmNlIDwtIGFicyhyYXcubWVkaWFuIC0gcmF3Lm1lYW4pXG50cmltbWVkLmRpZmZlcmVuY2UgPC0gYWJzKHJhdy5tZWRpYW4gLSB0cmltbWVkLm1lYW4pXG5cbnByaW50KHBhc3RlKFwiUmF3IGRpZmZlcmVuY2UgaXMgXCIgLCByYXcuZGlmZmVyZW5jZSkpXG5wcmludChwYXN0ZShcIiBUcmltbWVkIGRpZmZlcmVuY2UgaXMgXCIgdHJpbW1lZC5kaWZmZXJlbmNlKSlcblxuXG5cblxuYGBgXG5cbjwhLS0gcm5iLXNvdXJjZS1lbmQgLS0+XG4ifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmF3Lm1lYW4gPCAtIG1lYW4oYmFua0RhdGEkYmFsYW5jZSlcbnJhdy5tZWRpYW4gPCAtIG1lZGlhbihiYW5rRGF0YSRiYWxhbmNlKVxuXG4jIGZvciBUPSAwLjEgd2Ugd2FudCB0byByZW1vdmUgdGhlIHRvcCBhbmQgYm90dG9tIDEwJSBvZiB0aGUgdmFsdWVzICggaW4gdGVybXMgb2Ygc2l6ZSlcbiMgZmlyc3QgY2FsY3VsYXRlIHRoZSB0ZW50aCBhbmQgbm9uZXRpZXRoIHBlcmNlbnRpbGVcblxuXG50ZW50aC5wZXJjZW50aWxlIDwtIHF1YW50aWxlKGJhbmtEYXRhJGJhbGFuY2UsIDAuMSlcbm5pbmV0aWV0aC5wZXJjZW50aWxlIDwtKGJhbmtEYXRhJGJhbGFuY2UsMC45KVxuXG4jIHRoZW4gc2VsZWN0IHRoZSBvbmx5IHJvd3Mgd2hlcmUgYmFsYW5jZSBpcyBiZXR3ZWVuIHRoZXNlIHR3byB2YWx1ZXNcbnRyaW1tZWQgPC0gYmFua0RhdGFbYmFua0RhdGEkYmFsYW5jZSA+IHRlbnRoLnBlcmNlbnRpbGUgJiBiYW5rRGF0YSRiYWxhbmNlIDwgbmludGlldGgucGVyY2VudGlsZSwgXVxudHJpbW1lZC5tZWFuIDwtIG1lYW4odHJpbW1lZCRiYWxhbmNlKVxudHJpbW1lZC5tZWFuXG5cbiMgdGhlIG1lZGlhbiB2YWx1ZSBpcyBleGFjdGx5IGluIHRoZSBjZW50cmUgb2YgdGhlIGRhdGFzZXQuIFRoZSBzbWFsbGVyIHRoZSBkaWZmZXJlbmNlIGJldHdlZW4gdGhlIG1lYW4gYW5kIHRoZVxuIyBtZWRpYW4gdGhlIG1vcmUgcmVwcmVzZW50YXRpdmUgdGhhdCBtZWFuIGlzXG5cbnJhdy5kaWZmZXJlbmNlIDwtIGFicyhyYXcubWVkaWFuIC0gcmF3Lm1lYW4pXG50cmltbWVkLmRpZmZlcmVuY2UgPC0gYWJzKHJhdy5tZWRpYW4gLSB0cmltbWVkLm1lYW4pXG5cbnByaW50KHBhc3RlKFwiUmF3IGRpZmZlcmVuY2UgaXMgXCIgLCByYXcuZGlmZmVyZW5jZSkpXG5wcmludChwYXN0ZShcIiBUcmltbWVkIGRpZmZlcmVuY2UgaXMgXCIgdHJpbW1lZC5kaWZmZXJlbmNlKSlcblxuXG5cblxuYGBgIn0= -->
+<pre class="r"><code>raw.mean &lt; - mean(bankData$balance)
+raw.median &lt; - median(bankData$balance)
+
+# for T= 0.1 we want to remove the top and bottom 10% of the values ( in terms of size)
+# first calculate the tenth and nonetieth percentile
+
+
+tenth.percentile &lt;- quantile(bankData$balance, 0.1)
+ninetieth.percentile &lt;-(bankData$balance,0.9)
+
+# then select the only rows where balance is between these two values
+trimmed &lt;- bankData[bankData$balance &gt; tenth.percentile &amp; bankData$balance &lt; nintieth.percentile, ]
+trimmed.mean &lt;- mean(trimmed$balance)
+trimmed.mean
+
+# the median value is exactly in the centre of the dataset. The smaller the difference between the mean and the
+# median the more representative that mean is
+
+raw.difference &lt;- abs(raw.median - raw.mean)
+trimmed.difference &lt;- abs(raw.median - trimmed.mean)
+
+print(paste(&quot;Raw difference is &quot; , raw.difference))
+print(paste(&quot; Trimmed difference is &quot; trimmed.difference))
+</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-output-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiXG48IS0tIHJuYi1mcmFtZS1iZWdpbiBleUp0WlhSaFpHRjBZU0k2ZXlKamJHRnpjMlZ6SWpwYkluUmliRjlrWmlJc0luUmliQ0lzSW1SaGRHRXVabkpoYldVaVhTd2libkp2ZHlJNk1Dd2libU52YkNJNk5Td2ljM1Z0YldGeWVTSTZleUpCSUhScFltSnNaU0k2V3lJd0lNT1hJRFVpWFgxOUxDSnlaR1lpT2lKSU5ITkpRVUZCUVVGQlFVRkNiVEZSVlZkeVJFMUJlRlkwYW1oaVFYZ3lSbTVwVDJoYVZEZzNkMDVuUWxKblpqazVVbmt4UXpBemRHdEVhR0pVT1RsUFZIRXlUbTFvY1UxdWNEYzRTazkxT1hZeU5tWnBNakJDUVVGSmVXMVpRMUZDUlVZcllrNDNTMFkwUVhOd1UxTkNSRWRaSzI1MWFsSXdiR1p3ZW5WR05rOUROM1Y0TlhOSE1IRm5ha1J4Ulc5QmVXdzJLemhPVVRKNllrRlNlbmd4Y1VJelYwbGpLMVprY1ZCcFlYSmFjbGR2ZVdGNk5taFFlRkZRYlRrMlluSldaekE0Ym1OdGFWWnJOVloxTlRVd2JFb3dhbmxaVUhSWVIwMU9hVlpMTDJSNE5rcHJlalJwUm5GUWVGQTJhRXd2VkZkaFVUZHNaVkpZV0ZKdFlqQm1UMnhJTHk5elZsbFljaXRTV0c5Sk9GcDRVRkUzUW5WRWRrVXJjbEJ3UldSRlZGWXJRaTlvUlZKcmR5dFdSak5tUjAxbFRFVnFkRlY2Y204dlJYZDBlVzAxYkhCa1ZHb3ZRVzh6YkRWaE5FNUJaMEZCSW4wPSAtLT5cblxuPGRpdiBkYXRhLXBhZ2VkdGFibGU9XCJmYWxzZVwiPlxuICA8c2NyaXB0IGRhdGEtcGFnZWR0YWJsZS1zb3VyY2UgdHlwZT1cImFwcGxpY2F0aW9uL2pzb25cIj5cbntcImNvbHVtbnNcIjpbe1wibGFiZWxcIjpbXCJyb3dcIl0sXCJuYW1lXCI6WzFdLFwidHlwZVwiOltcImludFwiXSxcImFsaWduXCI6W1wicmlnaHRcIl19LHtcImxhYmVsXCI6W1wiY29sXCJdLFwibmFtZVwiOlsyXSxcInR5cGVcIjpbXCJpbnRcIl0sXCJhbGlnblwiOltcInJpZ2h0XCJdfSx7XCJsYWJlbFwiOltcImV4cGVjdGVkXCJdLFwibmFtZVwiOlszXSxcInR5cGVcIjpbXCJjaHJcIl0sXCJhbGlnblwiOltcImxlZnRcIl19LHtcImxhYmVsXCI6W1wiYWN0dWFsXCJdLFwibmFtZVwiOls0XSxcInR5cGVcIjpbXCJjaHJcIl0sXCJhbGlnblwiOltcImxlZnRcIl19LHtcImxhYmVsXCI6W1wiZmlsZVwiXSxcIm5hbWVcIjpbNV0sXCJ0eXBlXCI6W1wiY2hyXCJdLFwiYWxpZ25cIjpbXCJsZWZ0XCJdfV0sXCJkYXRhXCI6W10sXCJvcHRpb25zXCI6e1wiY29sdW1uc1wiOntcIm1pblwiOnt9LFwibWF4XCI6WzEwXSxcInRvdGFsXCI6WzVdfSxcInJvd3NcIjp7XCJtaW5cIjpbMTBdLFwibWF4XCI6WzEwXSxcInRvdGFsXCI6WzBdfSxcInBhZ2VzXCI6e319fVxuICA8XC9zY3JpcHQ+XG48XC9kaXY+XG5cbjwhLS0gcm5iLWZyYW1lLWVuZCAtLT5cbiJ9 -->
-<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbInRibF9kZiIsInRibCIsImRhdGEuZnJhbWUiXSwibnJvdyI6MCwibmNvbCI6NSwic3VtbWFyeSI6eyJBIHRpYmJsZSI6WyIwIMOXIDUiXX19LCJyZGYiOiJINHNJQUFBQUFBQUFCbTFRVVdyRE1BeFY0amhiQXgyRm5pT2haVDg3d05nQlJnZjk5UnkxQzAzdGtEaGJUOTlPVHEyTm1ocU1ucDc4Sk91OXYyNmZpMjBCQUFJeW1ZQ1FCRUYrYk43S0Y0QXNwU1NCREdZK251alIwbGZwenVGNk9DN3V4NXNHMHFnakRxRW9BeWw2KzhOUTJ6YkFSengxcUIzV0ljK1ZkcVBpYXJacldveWF6NmhQeFFQbTk2YnJWZzA4bmNtaVZrNVZ1NTUwbEowanlZUHRYR01OaVZLL2R4NkprejRpRnFQeFA2aEwvVFdhUTdsZVJYWFJtYjBmT2xILy9zVllYcitSWG9JOFp4UFE3QnVEdkUrclBwRWRFVFYrQi9oRVJrdytWRjNmR01lTEVqdFV6cm8vRXd0eW01bHBkVGovQW8zbDVhNE5BZ0FBIn0= -->
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":["row"],"name":[1],"type":["int"],"align":["right"]},{"label":["col"],"name":[2],"type":["int"],"align":["right"]},{"label":["expected"],"name":[3],"type":["chr"],"align":["left"]},{"label":["actual"],"name":[4],"type":["chr"],"align":["left"]},{"label":["file"],"name":[5],"type":["chr"],"align":["left"]}],"data":[],"options":{"columns":{"min":{},"max":[10],"total":[5]},"rows":{"min":[10],"max":[10],"total":[0]},"pages":{}}}
-  </script>
-</div>
-<!-- rnb-frame-end -->
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>text here</p>
-<p>Or, use a loop to convert all factor columns</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="task-4-finding-nas" class="section level2">
-<h2>Task 4: Finding NAs</h2>
-<ol style="list-style-type: decimal">
-<li>How many NAs are there for the education attribute?</li>
-<li>What percentage of the total is this?</li>
-</ol>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="finding-nas-in-all-columns" class="section level2">
-<h2>Finding NAs in all columns</h2>
-<p>See the lecture notes for how to do this. Get a list of all columns
-containing at least 1 NA and find the counts of each</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="task-5-finding-the-average" class="section level2">
-<h2>Task 5: Finding the Average</h2>
-<p>What is the average value of the following columns? 1. age 2.
-duration 3. pDays</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="fixing-the-pdays-column" class="section level2">
-<h2>Fixing the pDays Column</h2>
-<p>See the lecture notes for how to do this. Implement option 1 and
-option 2 in the cells below</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="task-6---omitting-rows-containing-na" class="section level2">
-<h2>Task 6 - Omitting Rows Containing NA</h2>
-<p>Create a copy of the dataset omitting any rows with NAs. How much
-data do we lose doing this? (express as a percentage of total rows)</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="task-7---calculating-quantiles" class="section level2">
-<h2>Task 7 - Calculating Quantiles</h2>
-<ol style="list-style-type: decimal">
-<li>Use the first cell to write a script to find the tenth percentile of
-the following data.</li>
-</ol>
-<pre class="r"><code>c(14, 15, 9, 14, 8, 9, 6, 7, 8, 12)</code></pre>
-<ol start="2" style="list-style-type: decimal">
-<li>Then add in the script the code to find the 30th, 50th and 75th
-percentile</li>
-<li>In the second cell, use the r <strong>quantile()</strong> function
-to calculate each of the percentiles above</li>
-</ol>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<div id="task-8---calculate-the-trimmed-mean" class="section level3">
-<h3>Task 8 - Calculate the Trimmed Mean</h3>
-<ol style="list-style-type: decimal">
-<li>Calculate the mean and median of the <em>balance</em> feature of our
-bankData dataframe</li>
-<li>Calculate the trimmed mean @ T = 0.1</li>
-<li>Show that the trimmed mean is more representative of the centre than
-the raw mean</li>
-</ol>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-chunk-end -->
-</div>
-</div>
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQojIFN1bW1hcnkgU3RhdGlzdGljcyBMZWN0dXJlIFByYWN0aWNhbA0KDQpUaGlzIG5vdGVib29rIGNhbiBiZSB1c2VkIHRvIGZvbGxvdyBhbG9uZyB3aXRoIHRoZSBsZWN0dXJlIG5vdGVzLg0KDQpgYGB7cn0NCiMgRG93bmxvYWQgdGhlIGJhbmsuemlwIGZpbGUgZnJvbSBicmlnaHRzcGFjZQ0KdXJsIDwtICdodHRwOi8vYXJjaGl2ZS5pY3MudWNpLmVkdS9tbC9tYWNoaW5lLWxlYXJuaW5nLWRhdGFiYXNlcy8wMDIyMi9iYW5rLnppcCcNCmRvd25sb2FkLmZpbGUodXJsLCBkZXN0ZmlsZSA9ICdiYW5rLnppcCcpDQp1bnppcCgnYmFuay56aXAnLCBsaXN0ID0gVCkNCmBgYA0KDQojIyBEYXRhIERlc2NyaXB0aW9uDQoNCiMjIyBOdW1lcmljIERhdGENCg0KMS4gIGFnZQ0KMi4gIGJhbGFuY2UNCjMuICBjb250YWN0IGRheQ0KNC4gIGR1cmF0aW9uDQo1LiAgY2FtcGFpZ24gY29udGFjdHMNCjYuICBwcmV2aW91cyBjb250YWN0cw0KNy4gIHByZXZpb3VzIGRheXMgKC0xLCBubyBwcmV2aW91cyBjb250YWN0KQ0KDQojIyMgQ2F0ZWdvcmljYWwgRGF0YQ0KDQoxLiAgam9iICgxMSkgeyDigJlhZG1pbuKAmSwg4oCZZW50cmVwcmVuZXVy4oCZLiAuIC4gfQ0KMi4gIG1hcml0YWwgKDMpIHsg4oCZZGl2b3JjZWTigJksIOKAmW1hcnJpZWTigJksIOKAmXNpbmdsZeKAmSB9DQozLiAgZWR1Y2F0aW9uICgzKSB7IOKAmXByaW1hcnnigJksIOKAmXNlY29uZGFyeeKAmS4gLiAuIH0NCjQuICBkZWZhdWx0ICgyKSB7IOKAmXllc+KAmSwg4oCZbm/igJkgfQ0KNS4gIGhvdXNpbmcgbG9hbiAoMikgeyDigJl5ZXPigJksIOKAmW5v4oCZIH0NCjYuICBQZXJzb25hbCBsb2FuICgyKSB7IOKAmXllc+KAmSwg4oCZbm/igJkgfQ0KNy4gIGNvbnRhY3QgdHlwZSAoMikgeyDigJl0ZWxlcGhvbmXigJksIOKAmWNlbGx1bGFy4oCZIH0NCjguICBjb250YWN0IG1vbnRoICgxMikgeyDigJlqYW7igJksIOKAmWZlYuKAmS4gLiAuIH0NCjkuICBwcmV2aW91cyBvdXRjb21lICgzKSB7IOKAmXN1Y2Nlc3PigJksIOKAmWZhaWx1cmXigJkuIC4gLiB9DQoxMC4gc3Vic2NyaWJlZCAoMikgeyDigJl5ZXPigJksIOKAmW5v4oCZIH0NCg0KIyMgVGFzayAxOiBJbXBvcnQgdGhlIGRhdGEgaW50byBSDQoNCk1ha2Ugc3VyZSB5b3UgcnVuIHRoZSBpbml0aWFsIHN0ZXBzIGluIHRoZSBjZWxsIGFib3ZlIHRvIGRvd25sb2FkIGFuZCB1bnppcCB0aGUgZGF0YXNldC4gVGhlbiBpbXBvcnQgdGhlIGRhdGEgaW50byBSLCB5b3UgbWF5IG5lZWQgdG8gbWFudWFsbHkgaW5zcGVjdCB0aGUgZGF0YXNldCB0byBnZXQgYW4gaWRlYSBvZiB0aGUgZm9ybWF0LiBTYXZlIHRoZSBkYXRhZnJhbWUgaW4gYSB2YXJpYWJsZSBjYWxsZWQgYmFua0RhdGEuDQoNCmBgYHtyfQ0KDQpgYGANCg0KIyMgVGFzayAyOiBCYXNpYyBDaGVja3MNCg0KQmVmb3JlIHdlIGdldCB0byB3b3JrIG9uIHRoZSBkYXRhZnJhbWUgd2Ugd2FudCB0byBwZXJmb3JtIHNvbWUgYmFzaWMgY2hlY2tzLiBGaXJzdCwgZ2V0IGFuIGlkZWEgb2YgdGhlIHNpemUgb2YgdGhlIGRhdGFzZXQgYnkgY2hlY2tpbmcgdGhlIG51bWJlciBvZiBjb2x1bW5zIGFuZCByb3dzLiBUaGVuIGRvdWJsZSBjaGVjayB0aGUgZmlyc3QgZmV3IGFuZCBsYXN0IGZldyByb3dzIG9mIHRoZSBkYXRhZnJhbWUgdG8gbWFrZSBzdXJlIHRoZXJlIHdlcmUgbm8gcHJvYmxlbXMgd2l0aCB0aGUgaW1wb3J0DQoNCmBgYHtyfQ0KDQpgYGANCg0KIyMgVGFzayAzOiBUeXBlIENvbnZlcnNpb24NCg0KQnkgZGVmYXVsdCwgcmVhZF9kZWxpbSByZWFkcyBjaGFyYWN0ZXIgY29sdW1ucyBhcyBjaGFyYWN0ZXJzLCBidXQgYWxsIG9mIG91ciBjaGFyYWN0ZXIgY29sdW1ucyBzaG91bGQgYmUgZmFjdG9ycy4gTWFudWFsbHkgY29udmVydCBjb2x1bW5zIDIsMyw0IGFuZCA1IHRvIGZhY3RvcnMgYmVsb3cNCg0KYGBge3J9DQp1bnppcCgnYmFuay56aXAnLCBleGRpcj0nLi9iYW5rRGF0YScpDQpsaWJyYXJ5KHJlYWRyKQ0KYmFua0RhdGEgPC0gcmVhZF9kZWxpbSgnLi9iYW5rRGF0YS9iYW5rLWZ1bGwuY3N2JywgZGVsaW09JzsnLCBuYT1jKCd1bmtub3duJyksIGd1ZXNzX21heD01MDAwMCkNCg0KYGBgDQpgYGB7cn0NCiNIZWFkKGJhbmtEYXRhKQ0KcHJvYmxlbXMoYmFua0RhdGEpDQpgYGANCg0KdGV4dCBoZXJlDQoNCg0KT3IsIHVzZSBhIGxvb3AgdG8gY29udmVydCBhbGwgZmFjdG9yIGNvbHVtbnMNCg0KYGBge3J9DQoNCg0KDQpgYGANCg0KIyMgVGFzayA0OiBGaW5kaW5nIE5Bcw0KDQoxLiAgSG93IG1hbnkgTkFzIGFyZSB0aGVyZSBmb3IgdGhlIGVkdWNhdGlvbiBhdHRyaWJ1dGU/DQoyLiAgV2hhdCBwZXJjZW50YWdlIG9mIHRoZSB0b3RhbCBpcyB0aGlzPw0KDQpgYGB7cn0NCg0KDQpgYGANCg0KIyMgRmluZGluZyBOQXMgaW4gYWxsIGNvbHVtbnMNCg0KU2VlIHRoZSBsZWN0dXJlIG5vdGVzIGZvciBob3cgdG8gZG8gdGhpcy4gR2V0IGEgbGlzdCBvZiBhbGwgY29sdW1ucyBjb250YWluaW5nIGF0IGxlYXN0IDEgTkEgYW5kIGZpbmQgdGhlIGNvdW50cyBvZiBlYWNoDQoNCmBgYHtyfQ0KDQpgYGANCg0KIyMgVGFzayA1OiBGaW5kaW5nIHRoZSBBdmVyYWdlDQoNCldoYXQgaXMgdGhlIGF2ZXJhZ2UgdmFsdWUgb2YgdGhlIGZvbGxvd2luZyBjb2x1bW5zPyAxLiBhZ2UgMi4gZHVyYXRpb24gMy4gcERheXMNCg0KYGBge3J9DQoNCmBgYA0KDQojIyBGaXhpbmcgdGhlIHBEYXlzIENvbHVtbg0KDQpTZWUgdGhlIGxlY3R1cmUgbm90ZXMgZm9yIGhvdyB0byBkbyB0aGlzLiBJbXBsZW1lbnQgb3B0aW9uIDEgYW5kIG9wdGlvbiAyIGluIHRoZSBjZWxscyBiZWxvdw0KDQpgYGB7cn0NCg0KYGBgDQoNCiMjIFRhc2sgNiAtIE9taXR0aW5nIFJvd3MgQ29udGFpbmluZyBOQQ0KDQpDcmVhdGUgYSBjb3B5IG9mIHRoZSBkYXRhc2V0IG9taXR0aW5nIGFueSByb3dzIHdpdGggTkFzLiBIb3cgbXVjaCBkYXRhIGRvIHdlIGxvc2UgZG9pbmcgdGhpcz8gKGV4cHJlc3MgYXMgYSBwZXJjZW50YWdlIG9mIHRvdGFsIHJvd3MpDQoNCmBgYHtyfQ0KDQpgYGANCg0KDQojIyBUYXNrIDcgLSBDYWxjdWxhdGluZyBRdWFudGlsZXMNCg0KMS4gIFVzZSB0aGUgZmlyc3QgY2VsbCB0byB3cml0ZSBhIHNjcmlwdCB0byBmaW5kIHRoZSB0ZW50aCBwZXJjZW50aWxlIG9mIHRoZSBmb2xsb3dpbmcgZGF0YS4NCg0KYGBgIHINCmMoMTQsIDE1LCA5LCAxNCwgOCwgOSwgNiwgNywgOCwgMTIpDQpgYGANCg0KMi4gIFRoZW4gYWRkIGluIHRoZSBzY3JpcHQgdGhlIGNvZGUgdG8gZmluZCB0aGUgMzB0aCwgNTB0aCBhbmQgNzV0aCBwZXJjZW50aWxlDQozLiAgSW4gdGhlIHNlY29uZCBjZWxsLCB1c2UgdGhlIHIgKipxdWFudGlsZSgpKiogZnVuY3Rpb24gdG8gY2FsY3VsYXRlIGVhY2ggb2YgdGhlIHBlcmNlbnRpbGVzIGFib3ZlDQoNCmBgYHtyfQ0KDQpgYGANCg0KIyMjIFRhc2sgOCAtIENhbGN1bGF0ZSB0aGUgVHJpbW1lZCBNZWFuDQoNCjEuIENhbGN1bGF0ZSB0aGUgbWVhbiBhbmQgbWVkaWFuIG9mIHRoZSAqYmFsYW5jZSogZmVhdHVyZSBvZiBvdXIgYmFua0RhdGEgZGF0YWZyYW1lDQoyLiBDYWxjdWxhdGUgdGhlIHRyaW1tZWQgbWVhbiBAIFQgPSAwLjENCjMuIFNob3cgdGhhdCB0aGUgdHJpbW1lZCBtZWFuIGlzIG1vcmUgcmVwcmVzZW50YXRpdmUgb2YgdGhlIGNlbnRyZSB0aGFuIHRoZSByYXcgbWVhbiANCg0KYGBge3J9DQoNCmBgYA==</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpUaGlzIGlzIGFuIFtSIE1hcmtkb3duXShodHRwOi8vcm1hcmtkb3duLnJzdHVkaW8uY29tKSBOb3RlYm9vay4gV2hlbiB5b3UgZXhlY3V0ZSBjb2RlIHdpdGhpbiB0aGUgbm90ZWJvb2ssIHRoZSByZXN1bHRzIGFwcGVhciBiZW5lYXRoIHRoZSBjb2RlLiANCg0KVHJ5IGV4ZWN1dGluZyB0aGlzIGNodW5rIGJ5IGNsaWNraW5nIHRoZSAqUnVuKiBidXR0b24gd2l0aGluIHRoZSBjaHVuayBvciBieSBwbGFjaW5nIHlvdXIgY3Vyc29yIGluc2lkZSBpdCBhbmQgcHJlc3NpbmcgKkN0cmwrU2hpZnQrRW50ZXIqLiANCg0KIyBUYXNrIDctIFN1bW1hcnkgU3RhdGlzdGljcyAtIGFuc3dlcg0KYGBge3J9DQoNCnJhbmRvbS5kYXRhIDwgLSgxNCwgMTUsIDksIDgsIDYsIDcsIDgsIDEyKQ0Kc29ydGVkLmRhdGEgPC0gc29ydChyYW5kb20uZGF0YSkNCnNvcnRlZC5kYXRhDQoNCnBlcmNlbnRpbGUuaW5kZXggPC0gY2VpbGluZyhsZW5ndGgoc29ydGVkLmRhdGEpICogMC4xKQ0KdGVudGgucGVyY2VudGlsZSA8LSBzb3J0ZWQuZGF0YVtbcGVyY2VudGlsZS5pbmRleF1dDQoNCnRlbnRoLnBlcmNlbnRpbGUNCg0KZm9yIChpIGluIEMoMC4zLCAwLjUsIDAuNzUpKSB7DQogIGluZGV4IDwtIGNlaWxpbmcobGVuZ3RoKHNvcnRlZC5kYXRhKSAqIGkpDQogIHZhbHVlIDwtIHNvcnRlZC5kYXRhW1tpbmRleF1dDQogIHByaW50KHBhc3RlMCgiVGhlICIsIGkgKiAxMDAsICJ0aCBwZXJjZW50aWxlIGlzICIsIHZhbHVlKQ0KICAgICAgICANCn0NCg0KZm9yIChpIGluIEMoMC4zLCAwLjUsIDAuNzUpKXsNCiAgICBwcmludChwYXN0ZTAoIlRoZSAiLCBpICogMTAwLCAidGggcGVyY2VudGlsZSBpcyAiLCBxdWFudGlsZShzb3J0ZWQuZGF0YSwgaSkNCiAgDQp9DQoNCmZvciAoaSBpbiBDKDAuMywgMC41LCAwLjc1KSl7DQogICAgcHJpbnQocGFzdGUwKCJUaGUgIiwgaSAqIDEwMCwgInRoIHBlcmNlbnRpbGUgaXMgIiwgcXVhbnRpbGUoc29ydGVkLmRhdGEsIGkpLCB0eXBlID0gMSkpKQ0KICANCn0NCg0KDQojIGZpdmUgbiB1bWJlciBzdW1tYXJ5ICAtIHF1YW50aWxlcw0KDQrigJjigJnigJlSDQpmaXZlbnVtKGJhbmtEYXRhJGFnZSkNCuKAmOKAmeKAmQ0KDQoNCmBgYA0KDQpBZGQgYSBuZXcgY2h1bmsgYnkgY2xpY2tpbmcgdGhlICpJbnNlcnQgQ2h1bmsqIGJ1dHRvbiBvbiB0aGUgdG9vbGJhciBvciBieSBwcmVzc2luZyAqQ3RybCtBbHQrSSouDQoNCldoZW4geW91IHNhdmUgdGhlIG5vdGVib29rLCBhbiBIVE1MIGZpbGUgY29udGFpbmluZyB0aGUgY29kZSBhbmQgb3V0cHV0IHdpbGwgYmUgc2F2ZWQgYWxvbmdzaWRlIGl0IChjbGljayB0aGUgKlByZXZpZXcqIGJ1dHRvbiBvciBwcmVzcyAqQ3RybCtTaGlmdCtLKiB0byBwcmV2aWV3IHRoZSBIVE1MIGZpbGUpLg0KDQpUaGUgcHJldmlldyBzaG93cyB5b3UgYSByZW5kZXJlZCBIVE1MIGNvcHkgb2YgdGhlIGNvbnRlbnRzIG9mIHRoZSBlZGl0b3IuIENvbnNlcXVlbnRseSwgdW5saWtlICpLbml0KiwgKlByZXZpZXcqIGRvZXMgbm90IHJ1biBhbnkgUiBjb2RlIGNodW5rcy4gSW5zdGVhZCwgdGhlIG91dHB1dCBvZiB0aGUgY2h1bmsgd2hlbiBpdCB3YXMgbGFzdCBydW4gaW4gdGhlIGVkaXRvciBpcyBkaXNwbGF5ZWQuDQoNCiMgVGFzayA4IC0gQ2FsY3VsYXRlIHRoZSB0cmltbWVkIG1lYW4NCg0KYGBge3J9DQpyYXcubWVhbiA8IC0gbWVhbihiYW5rRGF0YSRiYWxhbmNlKQ0KcmF3Lm1lZGlhbiA8IC0gbWVkaWFuKGJhbmtEYXRhJGJhbGFuY2UpDQoNCiMgZm9yIFQ9IDAuMSB3ZSB3YW50IHRvIHJlbW92ZSB0aGUgdG9wIGFuZCBib3R0b20gMTAlIG9mIHRoZSB2YWx1ZXMgKCBpbiB0ZXJtcyBvZiBzaXplKQ0KIyBmaXJzdCBjYWxjdWxhdGUgdGhlIHRlbnRoIGFuZCBub25ldGlldGggcGVyY2VudGlsZQ0KDQoNCnRlbnRoLnBlcmNlbnRpbGUgPC0gcXVhbnRpbGUoYmFua0RhdGEkYmFsYW5jZSwgMC4xKQ0KbmluZXRpZXRoLnBlcmNlbnRpbGUgPC0oYmFua0RhdGEkYmFsYW5jZSwwLjkpDQoNCiMgdGhlbiBzZWxlY3QgdGhlIG9ubHkgcm93cyB3aGVyZSBiYWxhbmNlIGlzIGJldHdlZW4gdGhlc2UgdHdvIHZhbHVlcw0KdHJpbW1lZCA8LSBiYW5rRGF0YVtiYW5rRGF0YSRiYWxhbmNlID4gdGVudGgucGVyY2VudGlsZSAmIGJhbmtEYXRhJGJhbGFuY2UgPCBuaW50aWV0aC5wZXJjZW50aWxlLCBdDQp0cmltbWVkLm1lYW4gPC0gbWVhbih0cmltbWVkJGJhbGFuY2UpDQp0cmltbWVkLm1lYW4NCg0KIyB0aGUgbWVkaWFuIHZhbHVlIGlzIGV4YWN0bHkgaW4gdGhlIGNlbnRyZSBvZiB0aGUgZGF0YXNldC4gVGhlIHNtYWxsZXIgdGhlIGRpZmZlcmVuY2UgYmV0d2VlbiB0aGUgbWVhbiBhbmQgdGhlDQojIG1lZGlhbiB0aGUgbW9yZSByZXByZXNlbnRhdGl2ZSB0aGF0IG1lYW4gaXMNCg0KcmF3LmRpZmZlcmVuY2UgPC0gYWJzKHJhdy5tZWRpYW4gLSByYXcubWVhbikNCnRyaW1tZWQuZGlmZmVyZW5jZSA8LSBhYnMocmF3Lm1lZGlhbiAtIHRyaW1tZWQubWVhbikNCg0KcHJpbnQocGFzdGUoIlJhdyBkaWZmZXJlbmNlIGlzICIgLCByYXcuZGlmZmVyZW5jZSkpDQpwcmludChwYXN0ZSgiIFRyaW1tZWQgZGlmZmVyZW5jZSBpcyAiIHRyaW1tZWQuZGlmZmVyZW5jZSkpDQoNCg0KDQoNCmBgYA0K</div>
 
 
 
@@ -2005,7 +1894,7 @@ $(document).ready(function () {
 <!-- code folding -->
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("Summary Statistics Lecture Practical (RStudio).Rmd");
+  window.initializeSourceEmbed("working-2-content - sldies-code.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>
