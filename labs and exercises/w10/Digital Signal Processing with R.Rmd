@@ -1,0 +1,90 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+
+#### Packages used
+
+```{r}
+#install.packages("tuneR")
+#install.packages("ggplot2")
+#install.packages("seewave")
+#install.packages("signal")
+library(tuneR)
+library(ggplot2)
+library(seewave)
+library(signal)
+```
+
+### Task 1
+
+1. Download the laugh.wav file [here](https://drive.google.com/file/d/1oju8aZPF8wCbQaWs6uXfochFBZ4U7xEH/view?usp=sharing)
+2. Load it with the readWave function and plot its waveform.
+3. Analyse the waveform, and load the file again, but only the last “hiccup”. Check the documentation of [readWave](https://www.rdocumentation.org/packages/tuneR/versions/1.4.5/topics/readWave) to identify the parameters you can use to load only a part of the file.
+
+```{r}
+# Code here
+
+```
+
+### Task 2
+
+Complete the `print_audio_metadata` function and print: 1) if the file is stereo or not, sample rate, bit depth, number of channels, duration in seconds, number of frames, min and max amplitude of each channel
+
+```{r echo=TRUE}
+print_audio_metadata <- function(file_name) {
+  # Read the audio file
+  audio <- readWave(file_name)
+
+  # Extract properties
+  is_stereo <- audio@stereo
+  sample_rate <- audio@samp.rate
+  bit_depth <- audio@bit
+  
+  num_channels <- 2
+  if (length(audio@right) == 0 || length(audio@left) == 0) {
+    num_channels <- 1
+  }
+  
+  # COMPLETE FUNCTION HERE
+  
+
+}
+
+# Example usage:
+print_audio_metadata("laugh.wav")
+
+```
+
+### Task 3
+
+Some experimentation is usually necessary when applying filters. Play with the butter n and W filter values. Compare different results and see if you can better approximate the filtered signal to the original one.
+
+```{r}
+
+t <- seq(0, 1, len = 100)
+sig <- sin(2 * pi * t)
+noisySig <- sin(2 * pi * t) + 0.25 * rnorm(length(t))
+
+butterFilter <- butter(3, 0.1)
+recoveredSig <- filter(butterFilter, noisySig)
+allSignals <- data.frame(t, sig, noisySig, recoveredSig)
+ggplot(allSignals, aes(t)) + 
+  geom_line(aes(y = sig, color = "Original")) + 
+  geom_line(aes(y = noisySig, color = "Noisy")) + 
+  geom_line(aes(y = recoveredSig, color = "Recovered")) + 
+  labs(x = "Time", y = "Signal")
+
+```
+
+### Task 4
+
+Download the bird song [here](https://drive.google.com/file/d/1plo2puYg8WNgSuMe3TT_TKDO60qLTVi5/view?usp=sharing).
+Plot its spectrogram using `spectro`. Using the previous parameters, try to provide a clearer representation of the bird sounds.
+
+```{r}
+# Code here
+
+```
