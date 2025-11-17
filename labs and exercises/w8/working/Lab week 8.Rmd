@@ -1,0 +1,183 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+# Ted Talks
+
+This dataset has been adapted from the Kaggle [Ted Talks Dataset](https://www.kaggle.com/rounakbanik/ted-talks).  A full dataset description is available at the website. You will need to download the files `ted.csv` and `ted_tags.csv` in Brightspace.
+
+
+## Context
+These datasets contain information about all audio-video recordings of TED Talks uploaded to the official TED.com website until September 21st, 2017. The TED main dataset contains information about all talks including number of views, number of comments, descriptions, speakers and titles. The TED transcripts dataset contains the transcripts for all talks available on TED.com.
+
+## Data Description
+
+### ted.csv
+
+*comments*
+The number of first level comments made on the talk
+
+*description*
+A blurb of what the talk is about
+
+*duration*
+The duration of the talk in seconds
+
+*event*
+The TED/TEDx event where the talk took place
+
+*film_date*
+The Unix timestamp of the filming
+
+*languages*
+The number of languages in which the talk is available
+
+*main_speaker*
+The first named speaker of the talk
+
+*name*
+The official name of the TED Talk. Includes the title and the speaker.
+
+*num_speaker*
+The number of speakers in the talk
+
+*published_date*
+The Unix timestamp for the publication of the talk on TED.com
+
+*speaker_occupation*
+The occupation of the main speaker
+
+*title*
+The title of the talk
+
+*url*
+The URL of the talk
+
+*views*
+The number of views of the talk
+
+### ratings.csv
+
+A lookup table for ratings
+
+*id*
+The ID of the rating
+
+*rating*
+Rating description in English
+
+### talk_ratings.csv
+
+*id*
+Rating ID (corresponds with the ID in *ratings.csv*
+
+*title*
+Title of the talk
+
+*count*
+The number of times this talk was awarded given this rating
+
+### ted_tags.csv
+
+*title*
+Title of the talk
+
+*tag*
+Descriptive tag applied to the talk
+1. Load the Ted Talks dataset (ted.csv)
+
+```{r}
+library(dplyr)
+library(readr)
+
+path <- file.path("ted_main.csv")
+ted_main_df <- read_csv(path)
+
+transcript_df <- read.csv('transcripts.csv', stringsAsFactors=FALSE)
+
+
+str(ted_main_df)
+str(transcript_df)
+
+
+occupation_counts <- ted_main_df %>%
+group_by(speaker_occupation) %>%
+summarise(n = n()) %>%
+arrange(desc(n))
+head(occupation_counts, 5)
+
+
+```
+
+2. How many speakers from each occupation have been appeared on a Ted Talk? What are the top 5 most popular occupations?
+
+```{r}
+summary(ted_main_df)
+names(ted_main_df)
+ncol(ted_main_df)
+nrow(ted_main_df)
+
+occupation_counts <- ted_main_df %>%
+group_by(speaker_occupation) %>%
+summarise(n = n()) %>%
+arrange(desc(n))
+head(occupation_counts, 5)
+
+```
+
+3. Create two subsets of the data into 2 groups, popular (top 25% of views) and niche (< top 25% of views)
+
+```{r}
+q25 <- quantile(ted_main_df$views, 0.75)
+popular <- ted_main_df %>% filter(views >= q25)
+niche <- ted_main_df %>% filter(views < q25)
+```
+
+4. Load the ted tags data (ted_tags.csv)
+
+```{r}
+ted_tags_df <- read_csv("ted_tags.csv")
+```
+
+5. Count the number of rows in your main dataset, create a copy of your dataset and join in with the tags. How many rows do you have now? Why?
+
+```{r}
+rows_before <- nrow(ted_main_df)
+ted_main_df_joined <- left_join(ted_main_df, ted_tags_df, by = "title")
+rows_after <- nrow(ted_main_df_joined)
+rows_before; rows_after
+
+```
+
+6. Are there any talks which don't have a corresponding entry in ted tags
+
+```{r}
+no_tag <- anti_join(ted_main_df, ted_tags_df, by = "title")
+no_tag
+
+```
+
+7. Which is the most popular tag
+
+```{r}
+# names(ted_tags_df)
+# summary(ted_tags_df)
+popular_tag <- ted_tags_df %>%
+group_by(tags) %>%
+summarise(n = n()) %>%
+arrange(desc(n))
+head(popular_tag, 1)
+```
+
+8. Calculate each event's percentage contribution to the total number of talks
+
+```{r}
+
+event_pct <- ted_main_df %>%
+group_by(event) %>%
+summarise(count = n()) %>%
+mutate(percent = 100 * count / sum(count))
+event_pct
+
+```

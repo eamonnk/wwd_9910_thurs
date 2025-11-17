@@ -1,0 +1,290 @@
+---
+title: "Untitled"
+output: html_document
+date: "2025-11-03"
+---
+
+# Transforming Data with *dplyr*
+
+Use this notebook to work along with the examples in the lecture notes
+
+## Task 1
+
+Import the files **bnames.csv.bz2** and **births.csv** from **babyData.zip**
+
+```{r}
+
+```
+
+## Task 2
+
+1.  Use logical subsetting to extract your name from the dataset
+2.  Plot the trend over time
+3.  What geom should you use?
+4.  Do you need any extra aesthetics
+
+```{r}
+
+```
+
+Notice the zigzag patterns above. In the case of the name *Michael* they are caused by entries for girls around the early *1920s*. Investigate what's causing this in the code block below.
+
+```{r}
+
+```
+
+Let's separate these into 2 series, one for boys and one for girls
+
+```{r}
+
+```
+
+## Filtering Data in dplyr
+
+The *stats* package provides its own implementation of **filter** which works differently to *dplyr*'s implementation. If you find you're getting strange results, make sure you've loaded the *dplyr* package using either **require()** or **library()**
+
+The code block below defines the colour dataframe
+
+```{r}
+library('dplyr')
+colour <- c('blue', 'black', 'blue', 'blue', 'black')
+value <- 1:5
+df <- data.frame(colour, value)
+df
+
+```
+
+Filter out all rows where the colour column is not equal to **blue**
+
+```{r}
+filter(df, colour == 'blue')
+```
+
+This time we are filtering rows that have 1 or 4 in the value column
+
+```{r}
+filter(df, value %in% c(1,4))
+```
+
+## Task 3
+
+Use filter to find all of the girls' names from the year 2000
+
+```{r}
+
+```
+
+## Projecting Data in dplyr
+
+**Projection** is a fancy way of saying *selecting* columns from a data frame. If we select only certain rows then we are *filtering* (removing rows that don't meet a condition), when we select columns we are *projecting*. In this example we wish to select the colour column from the data
+
+```{r}
+select(df, colour)
+```
+
+Suppose that we wish to select every column except the colour column
+
+```{r}
+select(df, -colour)
+```
+
+## Task 4
+
+Select the *year*, *name* and *sex* columns from babyNames
+
+```{r}
+
+```
+
+## Arranging Data in *dplyr*
+
+Arranging is another way of saying re-ordering or *sorting* data.
+
+We may wish to arrange the rows of a data frame based on the values of a particular column. Sort the dataframe by colour, ascending
+
+```{r}
+arrange(df, colour)
+```
+
+We can also arrange rows based on a column in *descending* order. Sort the dataframe based on the value column, descending
+
+```{r}
+arrange(df, desc(value))
+```
+
+### Another Example
+
+What happens if you run this R code? (see lecture notes)
+
+```{r}
+arrange(df, colour, desc(value))
+```
+
+## Task 5
+
+1.  Reorder the rows of babyNames from highest to lowest based on the *prop* variable
+2.  Which name had the highest proportion in a single year?
+3.  In what year did your name have the smallest proportion?
+
+```{r}
+```
+
+## Mutating Data with *dplyr*
+
+*Mutation* is a fancy way of saying *changing* the contents of a data frame. The most common use of mutation is to create calculated columns.
+
+```{r}
+mutate(df, twice = 2 * value)
+```
+
+```{r}
+mutate(df, twice = 2 * value, quadruple = 2 * twice)
+```
+
+What happens if you run this R code? (see notes for details)
+
+```{r}
+mutate(df, steps = cumsum(value))
+```
+
+What happens if you run this R code? See lecture notes for details
+
+```{r}
+temp <- mutate(df, twice = 2 * value, quadruple = 2 * twice)
+mutate(temp, twice = NULL)
+```
+
+## Summarising Data with *dplyr*
+
+In the previous section we looked at creating new values with row-wise operations. We essentially made our dataset wider by adding extra columns. Summarising data allows us to apply some of the summary statistics we saw last week. Summarising data in dplyr will combine all rows into a single value.
+
+```{r}
+summarise(df, total = sum(value))
+```
+
+More than one summary statistic may be calculated at a time. Calculate the total and average of the value of column
+
+```{r}
+summarise(df, total = sum(value), avg = mean(value))
+```
+
+## Task 6
+
+1.  Add a new column to babyNames that converts *prop* to a percentage
+2.  Create a summary that displays the **min** and **max** *prop* for your name
+
+```{r}
+
+```
+
+## Joining Data
+
+```{r}
+x <- data.frame(
+    name = c('John', 'Paul', 'George', 'Ringo', 'Stuart', 'Pete'),    
+    instrument = c('guitar', 'bass', 'guitar', 'drums', 'bass', 'drums')
+)
+
+y <- data.frame(
+    name = c('John', 'Paul', 'George', 'Ringo', 'Brian'), 
+    band = c(T, T, T, T, F)
+)
+```
+
+### Left Join
+
+Include all x and matching rows of y
+
+```{r}
+left_join(x, y, by = 'name')
+```
+
+### Inner Join
+
+include rows of x that appear in y and matching rows of y
+
+```{r}
+inner_join(x, y, by = 'name')
+```
+
+### Semi-Join
+
+Include rows of x that appear in y
+
+*This is like inner-join but without displaying the matching rows of y. This is really more of a filter.*
+
+```{r}
+semi_join(x, y, by='name')
+```
+
+### Anti-Join
+
+Include rows of x that do not appear in y
+
+*this is essentially the opposite of a semi-join. It displays any rows which semi-join would remove*
+
+```{r}
+anti_join(x, y, by='name')
+```
+
+## Task 7
+
+1.  Combine babyNames with births
+2.  Create a new column that shows the total number of babies born each year for each name
+
+```{r}
+```
+
+## Task 8
+
+1.  Calculate the total for a single name *e.g.* your name
+2.  Devise a strategy for calculating the total for every name
+
+```{r}
+```
+
+The first step is to **group the rows** of the data frame by name
+
+```{r}
+```
+
+The result of this operation is simply the addition of the *Groups* metadata to the data frame (tibble). The second step **applies a function** to each group individually. Calculate the total for each name.
+
+```{r}
+```
+
+Groups may also be formed using *more than one* variable. Group the dataframe by name and sex
+
+```{r}
+```
+
+Summarising **removes** one level (variable) from the grouping. Calculate the total by name and sex. Then summarise again to calculate total by name.
+
+```{r}
+```
+
+You can remove the metadata from the data frame using the **ungroup** function
+
+```{r}
+```
+
+## The *infix* Operator
+
+The **infix** operator allows us to re-write our RCode more fluently.
+
+``` r
+a() %>% b()
+```
+
+The code block above will execute the function a, and then pass whatever is returned from it as the first parameter to function b. It is the equivalent of the following code
+
+``` r
+tmp <- a()
+b(tmp)
+```
+
+The infix operator works, even if function b takes other parameters. It will always use the output from the previous step as the first parameter to the next step. This is why *dplyr* always has the dataframe as the first parameter to its functions
+
+```{r}
+
+```
