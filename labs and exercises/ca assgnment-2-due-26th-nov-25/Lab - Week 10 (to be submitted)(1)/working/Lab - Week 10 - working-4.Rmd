@@ -1,0 +1,551 @@
+---
+title: "Lab - Week 11"
+output:
+  html_document:
+    df_print: paged
+---
+
+### Bioacoustic audio signals analysis with R
+
+For this lab, we are going to analyse some bioacoustic audio signals from the [`warbleR`](https://marce10.github.io/warbleR/articles/Intro_to_warbleR.html) package. The goal is to analyze the recordings of [Cedar Waxwings](https://en.wikipedia.org/wiki/Cedar_waxwing) from the xeno-canto database to determine whether or not there is variation in different bird vocalization types (sounds that birds produce as a form of communication).
+
+![Audubon's illustration](220px-Bombycilla_cedrorum_audubon.jpg) ![Cedar waxwing in Virginia, USA](Cedar_Waxwing_-_Bombycilla_cedrorum.jpg){width="229"}
+
+You can listen an example below (need to knit the notebook as html, or open the file in the folder)
+
+<audio controls>
+
+<source src="Bombycilla_cedrorum.ogg" type="audio/wav">
+
+</audio>
+
+### Loading the data
+
+Load the dataframe `cedarWax_data.rds`. It contains information on 232 recordings of Xeno-Canto
+
+```{r}
+library(ggplot2)
+library(maps)
+library(dplyr)
+library(tuneR)
+library(seewave)
+library(tidyr)
+
+# need cedarWax_data.rds and this file in same folder i.e. sam workgin directory
+# craete dataframe
+cedarwax <- readRDS("cedarWax_data.rds")
+
+#convert all headers to lwoer case as was gettign a few errors as I went along
+names(cedarwax) <- tolower(names(cedarwax))
+print(paste0("Number of rows = " , (nrow(cedarwax))))
+print(paste0("Number of cols = " ,  (ncol(cedarwax))))
+# str(cedarwax)
+summary(cedarwax)
+names(cedarwax)
+
+
+#Amend this to reflect your folder structure, if it doesn't exist create the folder
+# creating folder to store downlaoded files and later converted files
+datalocation <- "./dwnld"
+if (!dir.exists(datalocation)) dir.create(datalocation)
+```
+
+The `maps` package can be used to generate a map of the globe. With that, we can plot the geographic spread of Xeno Canto recordings using their latitude and longitude features.
+
+```{r}
+
+# maps package plot of bird locations - Get the US map data
+world_map <- map_data("world")
+ggplot() +
+  # Plot the USA map as a polygon layer
+  geom_polygon(data = world_map, aes(x = long, y = lat, group = group), fill = "white", color = "black") +
+  # Add your cedarWax data as a point layer
+  # changed longtitude and latitude to lowercase to ti into above change fo headers to lower
+  geom_point(data = cedarwax, aes(x = longitude, y = latitude), color = "blue", size = 2) +
+  labs(title = "Cedar Waxwing Locations")
+```
+
+### **Vocalization types**
+
+For this exercise we are going to analyse different types of bird vocalizations visually. The `vocalization_type` column gives you the types of vocalizations contained in the dataset. In specific, we will be checking 4 types:
+
+1.  **Song:** Primarily used by birds for mating calls and territorial defense
+2.  **Begging Call:** Used by chicks or fledglings to solicit food from their parents
+3.  **Alarm Call**: Warns other birds of predators or danger
+4.  **Flight Call:** Communication during flight, often used to maintain flock cohesion
+
+### Task 1 (1 marks)
+
+**a)** Create a subset of the `cedarWax` dataframe containing only these four types of vocalization. You can match the full value of `Vocalization_type`, ignoring records that contain multiple values.
+
+```{r}
+# check how many voc types there are, will allow us double check we got expected dataframe after we create subset
+print("==== original dataframe with all voc types ====")
+voc_types <- levels(as.factor(cedarwax$vocalization_type))
+voc_types
+num_voc_types <- length(voc_types)
+print(paste0(" Total number of different voc types in original df  = ", num_voc_types))
+
+# craete list with the 4 types of song we're interested in, we'll reference this when filtering
+four_voc_types <- c("song", "begging call", "alarm call", "flight call")
+
+#craete object to store a count of voc types as we loop through them, just so can check we are right after create subset
+sum_four_voc_types <- 0
+
+# just view how many types are present of what we're interested in
+for (i in four_voc_types) {
+  #print(as.character(i))
+  print(i)
+  temp <- dplyr::filter(cedarwax, vocalization_type == i)
+  count_i <- nrow(temp)
+  sum_four_voc_types <- sum_four_voc_types + count_i
+  #print(summarise(temp, total = sum(total))$total[[1]])
+  print(nrow(temp))
+}
+print(paste0(" Total number of 4 voc types  = ", sum_four_voc_types))
+
+
+# create the new dataframe with those 4 call types, filtering the original df by rows so leave column blank after comma
+cedarwax_four_df <- cedarwax[cedarwax$vocalization_type %in% four_voc_types, ]
+
+# just view how many types are present of what we're interested in
+print("==== new subset with 4 voc types ====")
+unique(cedarwax_four_df$vocalization_type)
+print(paste0(" number of unique vocalization types = ", (length(unique(cedarwax_four_df$vocalization_type)))))
+print(paste0(" number of rows in new df = ", nrow(cedarwax_four_df)))
+print(paste0("number of cols in new df = ", ncol(cedarwax_four_df)))
+
+# this is our new subset of data in new dataframe continaing 4 vocalisation types
+head(cedarwax_four_df)
+
+
+
+```
+
+**b)** `seewave` is designed to work with wav files while the xeno-canto database stores *some* of its recordings as mp3 files. First we are going to download all the audio files and then convert the mp3 files to wav using `writeWave`.
+
+To download file you can use the code:
+
+`download.file(url = file_url, destfile = dest_path, mode = "wb")`
+
+The `file_url` can be set using the `Audio_file` column, while `dest_path` can be set as the `file.name` column
+
+PS: If the download fails or the package stops responding, I have shared the files [here](https://drive.google.com/drive/folders/1nazaSzRZf5ttoo8ZsMFcEogFxij6NiMo?usp=sharing).
+
+```{r}
+# ref > https://stackoverflow.com/questions/7779037/extract-file-extension-from-file-path 
+# modified this from what was provided provided to make it easier for me to track the variables, i.e. changed est_path to file_name
+# re-used dest path to include a sub folder to place the files in
+file_url <- cedarwax_four_df$audio_file
+file_name <- cedarwax_four_df$recording_id
+
+# some file names have characters which are not handled well when copying, get failed copies
+# modifying approch here to modify the fle name and then copy
+# get the original file name into an object
+orig_name <- cedarwax_four_df$file.name
+# get the file extension from the file name as some wav and mp3 files, need to separate so cna run regex on file name
+file_type_ext <- tools::file_ext(orig_name) 
+# have a look
+# orig_name
+# file_type_ext
+
+
+# https://regex101.com
+# run regex on file name to get filename into format can copy all files succesfully
+# onyl take upper , lower case alpha and numeric characters, underscore and hyphen, nothing else
+# any forbidden character replace with an underscore i.e. no brackets, spaces, parenthesis, < >, slahes, commas etc
+# re-attache the file extension .wav and mp3
+regexd_filename <- gsub("[^A-Za-z0-9_-]", "_", tools::file_path_sans_ext(orig_name))
+# have to also put character limit on file names as some are too big and failing to copy as path + filename too long
+# tested different character lengths and this still provides unique filename and nto failing 
+# would ideally use another unique identifuier from table and append to filename to ensure no duplicates
+max_len <- 40
+# modify the original filename then re-attach the extension
+regexd_charlim_filename <- substr(regexd_filename, 1, max_len)
+regexd_charlim_ext_filename <- paste0(regexd_charlim_filename, ".", file_type_ext)
+regexd_charlim_ext_filename <- tolower(regexd_charlim_ext_filename)
+
+# where to copy to with amended file name
+dest_path <- file.path(datalocation,regexd_charlim_ext_filename)
+
+# add  loop so if run twice doesn't just keep downloading
+# files will be downloaded to the "dwnld" folder inside your working directory, where this script is located
+# There should be 58 in total
+download.file(url = file_url, destfile = dest_path, mode = "wb")
+
+
+
+```
+
+Read the .mp3 files with `readMP3` and write it to .wav with the `writeWave` function. You will need to check the file extension to see which file names end in `.mp3`. You can save the `wav` version with the same names. For example, if you have a file `CEDW 2.mp3` file, you should have a new one `CEDW 2.wav` after calling `writeWave`.
+
+```{r}
+
+# create folder to move mp3 files into once they have been converted
+# thsi is just to keep the working folder containging wavs clean. so it just have the files you want to work with
+convered_mp3_location <- file.path(datalocation, "converted_mp3_files")
+if (!dir.exists(convered_mp3_location )) dir.create(convered_mp3_location)
+
+# get object with all files in the folder and get the numebr of files in the folder, just using length function
+all_audio_files <- list.files(datalocation, full.names = TRUE)
+print(paste0("You have ", length(all_audio_files), " audio files in total"))
+
+# using file_ext create wav and mp3 objects to work on and then again get the length of those objects to get the number of files for each so we knwo what we're dealign with and can assess if we are successful or not
+mp3_files <- all_audio_files[tools::file_ext(all_audio_files)== "mp3"]
+print(paste0("You have ", length(mp3_files), " mp3 files"))
+wav_files <- all_audio_files[tools::file_ext(all_audio_files)== "wav"]
+print(paste0("You have ", length(wav_files), " wav files"))
+print("===========")
+
+# crate a coutnign object to use in the loop to get totals converted, m ake sure it matches earlier mp3 number
+mp3_conv_count <- 0
+
+# https://www.rdocumentation.org/packages/tuneR/versions/1.4.7/topics/writeWave
+# https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/basename 
+# read the mp3 files into an audio data object with readmp3
+# we have to give the convert writewave fn a file name so we'll create a wav file name to sue during conversion
+# should really add some error handling eg. if already converted and run a second time, don't get duplicates, no mp3 files present
+# not adding as not explicitly asked for - assume other will be one run for our purposes
+for (file in mp3_files)
+{
+  audio_mp3 <- readMP3(file)
+  # crate wav file name to use when converting based off the mps filename, will use basename to return just the filename from the path
+  mp3_file_name_sans_ext<- tools::file_path_sans_ext(basename(file))
+  #crate wav filename to sue during conversion
+  new_wav_filename <- file.path(datalocation, paste0(mp3_file_name_sans_ext, ".wav"))
+  writeWave(audio_mp3, new_wav_filename)
+  print(paste0(" converted ", basename(file)))
+  mp3_conv_count <- mp3_conv_count +1
+  mp3_move_path <- file.path(convered_mp3_location, basename(file))
+  file.rename(file, mp3_move_path)
+
+
+}
+
+print("======= ====")
+print(paste0("Converted ", mp3_conv_count, " mp3 files to wav files, and moved mp3 files to new folder ./dwnld/converted_mp3_files"))
+print("===========")
+```
+
+### Task 2 (3 marks)
+
+Modify the function to describe audio created in class. Instead of printing information, build a dataframe containing summary statistics for the files generated in Task 2. Keep the `Recording_ID` and `Vocalization_type` of each record so we can analyse them separately after. Try to include as much information as possible for each recording.
+
+```{r}
+
+print("========Creating function ===")
+# create the functino to get summary stats for each wav file an dplace that into dataframe
+audio_file_into_df <- function(file_name) {
+  # Read the wav file into a wave class object called audio
+  # won't specify any argument, will take all audio and metadata and 
+  audio <- readWave(file_name)
+
+  # Extract properties
+  is_stereo <- audio@stereo
+  sample_rate <- audio@samp.rate
+  bit_depth <- audio@bit
+  # duration_seconds <- duration(file_name) - gettign error when run this later in loop, using below method instead num of samples/hz
+  duration_seconds <- length(audio@left) / sample_rate
+  # assumign not stero and willc al rught channel frames in loop when checkgin if stero
+  num_frames_left <- length(audio@left)
+  # mono channels ard always stored in left
+  max_amp_left <- max(audio@left)
+  min_amp_left <- min(audio@left)
+  
+  if (is_stereo) {
+    max_amp_right <-max(audio@right)
+    min_amp_right <- min(audio@right)
+    num_frames_right <- length(audio@right)
+}
+
+  else {
+    # get error when use other value
+    max_amp_right <- NA
+    min_amp_right <- NA
+    num_frames_right <- NA
+}
+
+audio_df <- data.frame(
+  # filename is giving flll path so using basename to get just filename
+  file_name = basename(file_name),
+  duration_seconds,
+  is_stereo,
+  sample_rate,
+  bit_depth,
+  num_frames_left,
+  max_amp_left,
+  min_amp_left,
+  num_frames_right,
+  max_amp_right,
+  min_amp_right,
+  stringsAsFactors = FALSE
+  
+  
+)
+  
+
+
+}
+print("========put data from wav files obtained using function into dataframe ===")
+# https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/list.files
+# Example usage:
+# print_audio_metadata("laugh.wav")
+# have subfolder for copied mp3 files so thay are not in the same foldr any more
+# use pattern to just get ".wav" files for passing into function
+wav_filenames <- list.files(datalocation, pattern = "\\.wav$", full.names = TRUE )
+# wav_filenames
+
+#create empty data frame to use in loop that we'll append to using rbind to stroe the data from each file in
+audio_wav_df <- data.frame()
+
+# loop to pass in individual files from list of files
+for (input_file in wav_filenames) {
+  row <- audio_file_into_df(input_file)
+  audio_wav_df <- rbind(audio_wav_df, row)
+  
+}
+
+summary(audio_wav_df)
+names(audio_wav_df)
+
+print("=====combine cedarwax dataframe vocalization type and new audio wav dataframe======")
+###### add data from earleir cedarWax dataframs to combone vocalisation type in new 
+
+# apply regex to file anmes in cedarwax as was done with audi filenames as gettign mismatch and as such missing files after match/joining on filenames
+# this will give us identical columns which we will join on
+cedarwax_four_df$file_name_regexd <- cedarwax_four_df$file.name
+cedarwax_four_df$file_name_regexd <- gsub("[^A-Za-z0-9_-]", "_", tools::file_path_sans_ext(cedarwax_four_df$file_name_regexd))
+# have to also put character limit on file names as some are too big and failing to copy as path + filename too long
+# tested different character lengths and this still provides unique filename and nto failing 
+# would ideally use another unique identifuier from table and append to filename to ensure no duplicates
+max_len <- 40
+# modify the original filename then re-attach the extension
+cedarwax_four_df$file_name_regexd <- substr(cedarwax_four_df$file_name_regexd, 1, max_len)
+cedarwax_four_df$file_name_regexd <- paste0(cedarwax_four_df$file_name_regexd, ".wav")
+cedarwax_four_df$file_name_regexd <- tolower(cedarwax_four_df$file_name_regexd)
+
+# # doing a left join - adding vocalisation_type, recoring_id and the new filename_match_string to audio dataframe
+# https://stackoverflow.com/questions/21888910/how-to-specify-names-of-columns-for-x-and-y-when-joining-in-dplyr
+audio_wav_df_rec_voc <- audio_wav_df %>% left_join(cedarwax_four_df %>% select(recording_id, vocalization_type,file_name_regexd), by = join_by(file_name==file_name_regexd))
+# 
+# head(audio_wav_df_rec_voc )
+# names(audio_wav_df_rec_voc )
+nrow(audio_wav_df_rec_voc )
+ncol(audio_wav_df_rec_voc)
+names(audio_wav_df_rec_voc)
+head(audio_wav_df_rec_voc)
+
+totals <-table(audio_wav_df_rec_voc$vocalization_type)
+totals
+print(paste0("There are a total of ", sum(totals), " bird songs in our new dataframe ready to be plotted"))
+
+
+```
+
+### Task 3 (3 marks)
+
+a)  Plot the spectograms for `vocalization_type` Song for the .wav files produced in Task 3.
+
+```{r}
+
+song_df <- audio_wav_df_rec_voc %>% filter(vocalization_type == "song")
+
+nrow(song_df)
+
+for (song_bird in song_df$file_name) {
+  
+  wav_path_1 <- file.path(datalocation, song_bird)
+  audio <- readWave(wav_path_1)
+  message(" plotting for ", song_bird)
+
+  spectro(audio, 
+          f=audio@samp.rate, 
+          wl=128, # longer window lengths = better frequency resolution / shorte wl = better time resolutionm smaller value makes it easier to see, better resoluti, trued larger nunebrs but plot data is veryh small, 128 seems ball park best
+          flim=c(0,12), # range of frequencies to ficus on, tried ither valeus this loks about best for resoution
+          tlim=c(0,7), # time windows to focus on - tried other vablues, anythign abov 7, gives out of bounds error when run
+          noisereduction=2) # applied alogn the rows with value = 1 , or alogn columns with valuej =2, tried 1 and 2, 2 loks a small bit beter
+          
+}
+
+
+
+```
+
+b)  Plot the spectograms for `vocalization_type` Begging Call for the .wav files produced in Task 3.
+
+```{r}
+
+
+begging_df <- audio_wav_df_rec_voc %>% filter(vocalization_type == "begging call")
+
+nrow(begging_df)
+
+for (begging_bird in begging_df$file_name) {
+  
+  wav_path_1 <- file.path(datalocation, begging_bird)
+  audio <- readWave(wav_path_1)
+  message(" plotting for ", begging_bird)
+
+  spectro(audio, 
+          f=audio@samp.rate,
+          wl=128, # longer window lengths = better frequency resolution / shorte wl = better time resolutionm smaller value makes it easier to see, better resoluti, trued larger nunebrs but plot data is veryh small, 128 seems ball park best
+          flim=c(0,15), # logner frequsny range also to above, as so otuliers visible higer frequencies
+          tlim=c(0,10), # lnger time range works betr here than for song
+          noisereduction=1) # value  = 1 seems to give a better spectorgram than value = 2, with less noise
+}
+
+```
+
+c)  Plot the spectograms for `vocalization_type` Alarm call for the .wav files produced in Task 3.
+
+```{r}
+# just to see what the options are before modifyign thre code
+audio_wav_df_rec_voc$vocalization_type
+
+alarm_df <- audio_wav_df_rec_voc %>% filter(vocalization_type == "alarm call")
+
+nrow(alarm_df)
+
+for (alarm_bird in alarm_df$file_name) {
+  
+  wav_path_1 <- file.path(datalocation, alarm_bird)
+  audio <- readWave(wav_path_1)
+  # message(" plotting for ", alarm_bird)
+
+  spectro(audio, 
+          f=audio@samp.rate,
+          wl=96, # longer window lengths = better frequency resolution / shorte wl = better time resolutionm smaller value makes it easier to see, better resoluti, trued larger nunebrs but plot data is veryh small, 128 seems ball park best
+          flim=c(6,10), # logner frequsny range also to above, as so otuliers visible higer frequencies
+          tlim=c(0,70), # time range is a lot longer than rpevious
+          noisereduction=2) # don't see a mssive difference between noisereduction as = 1 or = 2...
+}
+
+```
+
+d)  Plot the spectograms for `vocalization_type` Flight call for the .wav files produced in Task 3.
+
+```{r}
+
+# just to see what the options are before modifyign thre code
+audio_wav_df_rec_voc$vocalization_type
+
+flight_df <- audio_wav_df_rec_voc %>% filter(vocalization_type == "flight call")
+
+nrow(flight_df)
+
+for (flight_bird in flight_df$file_name) {
+  
+  wav_path_1 <- file.path(datalocation, flight_bird)
+  audio <- readWave(wav_path_1)
+  # message(" plotting for ", alarm_bird)
+
+  spectro(audio, 
+          f=audio@samp.rate,
+          wl=512, # longer window lengths = better frequency resolution / shorte wl = better time resolutionm smaller value makes it easier to see, better resoluti, trued larger nunebrs but plot data is veryh small, 128 seems ball park best
+          flim=c(0,10), # logner frequsny range also to above, as so otuliers visible higer frequencies
+          tlim=c(0,.9), # time range is a lot longer than rpevious
+          noisereduction=1) # don't see a mssive difference between noisereduction as = 1 or = 2...
+}
+
+```
+
+### **Task 4 (3 marks)**
+
+The vocalization types analysed have distinct characteristics. For example:
+
+1.  **Song**: Songs often have clear, repeated patterns and are more complex compared to calls.
+
+2.  **Begging Call**: These calls are high-pitched and repetitive, making them visually distinct.
+
+3.  **Alarm Call**: These are usually sharp and short.
+
+4.  **Flight Call**: These calls are brief and often occur in sequences, showing unique temporal patterns.
+
+Are you able to identify any of these patterns in the description of the audio files created in Task 2 and the spectograms produced in Task 3? Write a report justifying your answer based on any insights observed (or not) so far. You might give examples of files where patterns have been observed. You can also investigate patterns by exploring the stats in a usual way (boxplots, bar charts, etc).
+
+
+## Report
+
+### Song
+Max frequency is up to about 8 KHz. There is noise present, the song is spread over about 2 KHz. Interms of loudness the amplitude isn't huge, there is not a lot of large amplitudes, though there is a spread of amplitudes, typically in a range of -25 to -3 dBs. In terms of spread and timeline, there are short bursts of < 1sec for the most part.The song noises are not sharp, but do have some duration associated with them.
+
+### Begging call
+Appear as repetitive recurrences, more so than the song types. Occuring in or around the 6 to 8.6 KHz range, slightly broader than the song frequency range. Not many rd areas in the spectogram indicating loudness, so not overly loud. -25 to -10 decibel amplitude range.
+
+### Alarm call
+Very noticeable and distinctive pattern compared ot the others, with very short duration, sharp bursts of noise, distinct from each other, not blending, repeated over 70 seconds. frequency between approx 7 and 9 Khz loudness spreads from -25 up to approx -5 dBs.
+
+### Flight Call
+There is a variety fo types, spreads, duration, frequencies. Longer durations over typically half a second, had to set a lover time limit, less than 1, to avoid getting out of bonds errors in the plots. This may be resulting in a loss off data in some of the plot displays. Wioud need more trial and error, investigation to get it better. Good bit of noise present in some plots which we would ideally try to reduce or filter out. loudness from -25 to 0 dB very large spread of frequencies from < 1 to > 10.
+
+
+
+### Overall
+
+average amplitude across all four calls
+
+Next we will calculate some key metrics, display and plotk some of them to try give us some further insight.
+
+```{r}
+
+
+# we'll calculate some metrics and put them into a new dataframe which we cna then plot
+key_metrics_df <- audio_wav_df_rec_voc %>% filter(!is.na(vocalization_type)) %>% 
+# crate the column to stire the calcluated data 
+  mutate(avg_amp = (max_amp_left + min_amp_left) / 2) %>%
+group_by(vocalization_type) %>%
+summarise(
+mean_duration = mean(duration_seconds),
+mean_max_amp = mean(max_amp_left),
+mean_min_amp = mean(min_amp_left),
+mean_avg_amp = mean(avg_amp),
+n = n()
+)
+
+# diaoy the data
+data.frame(key_metrics_df)
+
+```
+
+
+```{r}
+#some basic bar chart plots of summary metrics
+
+ggplot(key_metrics_df, aes(x = vocalization_type, y = mean_max_amp)) + geom_col(fill = "steelblue") +
+  labs(
+    title = "Mean Max Amplitude by Vocalization Type",
+    x = "Call Type",
+    y = "Mean Max Amplitude"
+  ) +
+  theme_minimal(base_size = 14)
+
+ggplot(key_metrics_df, aes(x = vocalization_type, y = mean_min_amp)) + geom_col(fill = "steelblue") +
+  labs(
+    title = "Mean Min Amplitude by Vocalization Type",
+    x = "Call Type",
+    y = "Mean  Min Amplitude"
+  ) +
+  theme_minimal(base_size = 14)
+
+ggplot(key_metrics_df, aes(x = vocalization_type, y = mean_avg_amp)) + geom_col(fill = "steelblue") +
+  labs(
+    title = "Mean Average Amplitude by Vocalization Type",
+    x = "Call Type",
+    y = "Mean Average Amplitude"
+  ) +
+  theme_minimal(base_size = 14)
+
+ggplot(key_metrics_df, aes(x = vocalization_type, y = mean_duration)) + geom_col(fill = "steelblue") +
+  labs(
+    title = "Mean Duration by Vocalization Type",
+    x = "Call Type",
+    y = "Mean Average Amplitude"
+  ) +
+  theme_minimal(base_size = 14)
+
+```
+
+We also attempted to obtain some metics around frequency, and potential Fourier Transforms to gain an insight into freqnecy and time domain. We also looked at domainant freuqncy, dfreq() to determine the frequency at the highest amplitude, i.e. when it was loudest, however, theres a n umber of factors which come into play during any analysis such as the mixture of mono and stereo signals and the amount of noise, n some of the audio signals. To adequately address these was beyond what was achievable in the timeframe available. 
+
+Overall, as can be seen from the table and plot data that we have obtained there is a big spread of data, in terms of range and its difficult to draw interpretations from them on their own without further time and deeper analysis of the data. The next step would really be to conduct further cleaning, removing noise and outliers, which are distorting some of he plots, to standardize the data to allow us dig deeper.
+

@@ -1,0 +1,129 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+library(tuneR)
+filepath <- ("./")
+audio <- readWave(file.path(filepath, "Bombycilla-cedrorum-313682.wav"))
+plot(audio, main = "Audio Waveform")
+# 
+# setwd("E:\\GG\\Msc\\DATA9910 (23115C)_working_with_data_lucas_rizzo_10ects_Thurs\\github\\wwd_9910_thurs\\labs and exercises\\w10\\working")
+getwd()
+# list.files()
+
+```
+
+```{r}
+
+library(tuneR)
+bomby_wav <- readWave("laugh.wav", from=(4.7), units="seconds")
+plot(bomby_wav)
+#play(bomby_wav)
+duration_bomby <- duration(bomby_wav)
+bomby_wav
+
+
+```
+```{r}
+laugh_wav <- readWave("laugh.wav")
+duration_seconds <- duration(laugh_wav)
+print(duration_seconds)
+5.041633
+
+
+num_frames <- length(laugh_wav) # Measurement of the amplitude
+max_amplitude <- max(audio@left) # Max amplitude of left channel
+min_amplitude <- min(audio@left) # Min amplitude of left channel
+file_size <- file.size("laugh.wav") # File size in bytes
+
+```
+
+```{r}
+
+library(signal)
+t <- seq(0, 1, len = 100)
+sig <- sin(2 * pi * t)
+ggplot(mapping = aes(t, sig)) + 
+  geom_line()
+
+ 
+#rnorm is function used to addthe ramdon numbers from a normal distribution
+noisySig <- sin(2 * pi * t) + 0.25 * rnorm(length(t))
+ggplot() + 
+  geom_line(aes(t, noisySig), color = "red")
+
+
+
+```
+
+```{r}
+# return a filtered sigal - noise smoothed out
+# rest f code is just to plto 3 values
+# need to understand , 1, and 0.1
+butterFilter <- butter(4, 0.2)			 	
+recoveredSig <- filter(butterFilter, noisySig)
+allSignals <- data.frame(t,
+                         sig,
+                         noisySig,
+                         recoveredSig)
+ggplot(allSignals, aes(t)) + 
+  geom_line(aes(y = sig,
+                color = "Original")) + 
+  geom_line(aes(y = noisySig,
+                color = "Noisy")) + 
+  geom_line(aes(y = recoveredSig,
+                color = "Recovered")) + 
+  labs(x = "Time", y = "Signal")
+
+
+```
+
+```{r}
+tico_wav <- readWave(file.path(filepath, "tico.wav"))
+f <- tico_wav@samp.rate
+
+spectro(tico_wav, f, channel = 1, wl = 1024, wn = "hanning", zp = 0,
+ovlp = 0, noisereduction = NULL, fastdisp = FALSE,
+complex = FALSE, norm = TRUE, correction="none",
+fftw = FALSE, dB = "max0", dBref = NULL, plot = TRUE,
+flog = FALSE, grid = TRUE, osc = FALSE, scale = TRUE, cont = FALSE,
+collevels = NULL, palette = spectro.colors,
+contlevels = NULL, colcont = "black",
+colbg = "white", colgrid = "black",
+colaxis = "black", collab="black",
+cexlab = 1, cexaxis = 1, 
+tlab = "Time (s)",
+
+flab = "Frequency (kHz)",
+alab = "Amplitude",
+scalelab = "Amplitude\n(dB)",
+main = NULL,
+scalefontlab = 1, scalecexlab =0.75,
+axisX = TRUE, axisY = TRUE, tlim = c(0.5,1.5), trel = TRUE,
+flim = c(2,6), flimd = NULL,
+widths = c(6,1), heights = c(3,1),
+oma = rep(0,4),
+listen=FALSE
+)
+```
+
+```{r}
+spectro(tico_wav, flim = c(2,6))
+```
+```{r}
+spectro(audio, flim = c(5,10), wl=2048, noisereduction = 1)
+```
+
+
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.

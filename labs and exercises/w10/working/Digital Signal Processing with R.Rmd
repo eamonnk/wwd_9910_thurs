@@ -27,6 +27,22 @@ library(signal)
 ```{r}
 # Code here
 
+bomby_wav <- readWave("laugh.wav", from=(4.7), units="seconds")
+plot(bomby_wav)
+
+# duration_bomby <- duration(bomby_wav)
+# bomby_wav
+laugh_wav <- readWave("laugh.wav")
+# duration_seconds <- duration(laugh_wav)
+# print(duration_seconds)
+# 5.041633
+num_frames <- length(laugh_wav) # Measurement of the amplitude
+max_amplitude <- max(audio@left) # Max amplitude of left channel
+min_amplitude <- min(audio@left) # Min amplitude of left channel
+file_size <- file.size("laugh.wav") # File size in bytes
+sample_rate <- laugh_wav@samp.rate
+
+print(paste0("Sample Rate = ", sample_rate, " Hz"))
 ```
 
 ### Task 2
@@ -42,6 +58,11 @@ print_audio_metadata <- function(file_name) {
   is_stereo <- audio@stereo
   sample_rate <- audio@samp.rate
   bit_depth <- audio@bit
+  duration_seconds <- duration(filename)
+  num_frames <- length(laugh_wav)
+  max_amplitude <- max(audio@left)
+  min_amplitude <- min(audio@left)
+  
   
   num_channels <- 2
   if (length(audio@right) == 0 || length(audio@left) == 0) {
@@ -50,6 +71,15 @@ print_audio_metadata <- function(file_name) {
   
   # COMPLETE FUNCTION HERE
   
+print(paste0("Stereo: True/False : ", num_channels))
+print(paste0("Duraion (sec): ", duration_seconds)
+print(paste0("Sample Rate: ", sample_rate ))
+print(paste0(" Bit Depth: ", bit_depth)
+print(paste0("Number of Channels: ", num_channels))     
+print(paste0("Number of Frames: (Left)  ", num_frames))    
+print(paste0("Max Amplitude: ", max_amplitude ))
+print(paste0("Min Amplitude: ", min_amplitude ))
+  
 
 }
 
@@ -57,6 +87,174 @@ print_audio_metadata <- function(file_name) {
 print_audio_metadata("laugh.wav")
 
 ```
+
+```{r}
+
+audiofile_df <-("laugh.wav")
+
+print_audio_metadata <- function(file_name) {
+  # Read the audio file
+  audio <- readWave(file_name)
+
+  # Extract properties
+  is_stereo <- audio@stereo
+  sample_rate <- audio@samp.rate
+  bit_depth <- audio@bit
+  duration_seconds <- duration(audio)
+  num_frames <- length(laugh_wav)
+  max_amplitude <- max(audio@left)
+  min_amplitude <- min(audio@left)
+  
+  
+  num_channels <- 2
+  if (length(audio@right) == 0 || length(audio@left) == 0) {
+    num_channels <- 1
+  }
+  
+print(paste0("Duration: ", duration(audio), " seconds"))
+print(paste0("Sample Rate: ", sample_rate, "Hz\n"))
+print(paste0("Bit Depth: ", bit_depth, "bits\n"))
+print(paste0("Number of Channels: ", num_channels))
+if (length(audio@left) > 0) {
+    print(paste0("Number of Frames (Left): ", length(audio@left)))
+    print(paste0("Min Amplitude (Left Channel): ", min(audio@left)))
+    print(paste0("Max Amplitude (Left Channel): ", max(audio@left)))
+}
+if (length(audio@right) > 0) {
+    print(paste0("Number of Frames (Right): ", audio@right))
+    print(paste0("Min Amplitude (Right Channel): ", min(audio@right)))
+    print(paste0("Max Amplitude (Right Channel): ", max(audio@right)))
+}
+
+}
+
+getwd()
+list.files()
+print_audio_metadata(audiofile_df)
+
+
+```
+
+
+
+```{r}
+
+library(tuneR)
+
+print_audio_metadata <- function(file_name) {
+  
+  # Read the audio
+  audio <- readWave(file_name)
+
+  # Extract properties
+  is_stereo        <- audio@stereo
+  sample_rate      <- audio@samp.rate
+  bit_depth        <- audio@bit
+  duration_seconds <- duration(audio)
+  
+  # Frame counts
+  num_frames_left  <- length(audio@left)
+  num_frames_right <- if (is_stereo) length(audio@right) else 0
+  
+  # Amplitude values
+  max_amplitude_left <- max(audio@left)
+  min_amplitude_left <- min(audio@left)
+  
+  if (is_stereo) {
+    max_amplitude_right <- max(audio@right)
+    min_amplitude_right <- min(audio@right)
+  }
+  
+  # Channels
+  num_channels <- ifelse(is_stereo, 2, 1)
+  
+  # ---- PRINT ----
+
+  print(paste0("File anme = ", file_name))
+  print("---------------------------")
+  print(paste0("Stereo: ", is_stereo))
+  print(paste0("Duration: ", duration_seconds, " seconds"))
+  print(paste0("Sample Rate: ", sample_rate, " Hz"))
+  print(paste0("Bit Depth: ", bit_depth, " bits"))
+  print(paste0("Number of Channels: ", num_channels))
+  
+  print(paste0("Frames (Left): ", num_frames_left))
+  print(paste0("Min Amplitude (Left): ", min_amplitude_left))
+  print(paste0("Max Amplitude (Left): ", max_amplitude_left))
+  
+  if (is_stereo) {
+    print(paste0("Frames (Right): ", num_frames_right))
+    print(paste0("Min Amplitude (Right): ", min_amplitude_right))
+    print(paste0("Max Amplitude (Right): ", max_amplitude_right))
+  }
+}
+
+
+
+print_audio_metadata("laugh.wav")
+
+```
+
+
+
+
+```{r}
+
+library(tuneR)
+
+print_audio_metadata <- function(file_name)
+  
+  # Read the audio
+  audio <- readWave(file_name)
+
+  # Extract properties
+  is_stereo        <- audio@stereo
+  sample_rate      <- audio@samp.rate
+  bit_depth        <- audio@bit
+  duration_seconds <- duration(audio)
+  
+  # Frame counts
+  num_frames_left  <- length(audio@left)
+  num_frames_right <- if (is_stereo) length(audio@right) else 0
+  
+  # Amplitude values
+  max_amplitude_left <- max(audio@left)
+  min_amplitude_left <- min(audio@left)
+  
+  if (is_stereo) {
+    max_amplitude_right <- max(audio@right)
+    min_amplitude_right <- min(audio@right)
+  }
+  
+  # Channels
+  num_channels <- ifelse(is_stereo, 2, 1)
+  
+
+print(paste0("Duration: ", duration(audio), " seconds"))
+print(paste0("Sample Rate: ", sample_rate, "Hz\n"))
+print(paste0("Bit Depth: ", bit_depth, "bits\n"))
+print(paste0("Number of Channels: ", num_channels))
+if (length(audio@left) > 0) {
+    print(paste0("Number of Frames (Left): ", length(audio@left)))
+    print(paste0("Min Amplitude (Left Channel): ", min(audio@left)))
+    print(paste0("Max Amplitude (Left Channel): ", max(audio@left)))
+}
+if (length(audio@right) > 0) {
+    print(paste0("Number of Frames (Right): ", audio@right))
+    print(paste0("Min Amplitude (Right Channel): ", min(audio@right)))
+    print(paste0("Max Amplitude (Right Channel): ", max(audio@right)))
+    
+
+    if (numchannels > 2) {
+    print(paste0("Cnogratualations yu have more than two channels and have Quadriphonc, dolby or some multi channel audio"))
+}
+    
+}
+
+print_audio_metadata("790888__maciekkubera__garden-at-dawn-warsaw-suburbs-1.wav")
+
+```
+
 
 ### Task 3
 

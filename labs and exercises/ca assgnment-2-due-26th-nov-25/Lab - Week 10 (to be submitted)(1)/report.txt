@@ -1,0 +1,45 @@
+## Report
+
+### Song:
+max is up to about 8 KHz, 
+there is noise present, the song is spread over about 2 KHz
+Interms of loudness the amplitude isn't huge, there is not a lot of large amplitudes, though there is a spread of amplitudes, typically in a range of -25 to -3 dBs.
+the spread and timeline, there are short bursts of < 1sec for the mostg part.
+The song noises are nto sharp, but do have some duration associated with them.
+
+### Begging call
+appear as repetitive recurrences, more so than the song types.
+occuring in or around the 6 to 8.6 KHz range, slightly broader than the song frequency range.
+NOt many rd areas in the spectogram indicatign loudness, so not overly loud.
+-25 to -10 decibel amplitude range
+
+
+### Alarm call
+Very noticeable and disctinctive pattern compared ot the others, with very short duration, sharp bursts of noise, distinct fomr each other, not blending, repeated over 70 seconds.
+frequency between approx 7 and 9 Khz
+loudness spreads from -25 up to approx -5 dBs.
+
+### Flight Call
+There is a variety fo types, spreads, durations, frequencies
+longer durations over typically half a second
+had to set a lover time limit, less than 1, to avoid getting out of bonds erros in the plots. This may be resulting in a los off data in some of the plot displays. Wioud need more trial and error, invstigation to get it better.
+Good bit of noise present in some plots which we would idealyl try to reduce or filter out.
+loudness from -25 to 0dB
+very large spread of frequencies from < 1 to > 10
+
+
+### Comparison
+
+average amplitude across all four calls
+
+
+frequency range
+
+ggplot(key_metrics_df, aes(x = vocalization_type, y = mean_max_amp)) +
+  geom_col(fill = "steelblue") +
+  labs(
+    title = "Mean Max Amplitude by Vocalization Type",
+    x = "Call Type",
+    y = "Mean Max Amplitude"
+  ) +
+  theme_minimal(base_size = 14)
