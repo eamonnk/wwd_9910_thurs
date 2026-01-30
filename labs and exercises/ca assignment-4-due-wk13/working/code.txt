@@ -1,0 +1,174 @@
+===lamost data import from vizier ==-====
+rom astroquery.vizier import Vizier
+
+# 1. Prepare the query
+# We specify the LAMOST DR7 catalog (J/ApJS/250/33/main).
+# We request the Source ID from LAMOST (designation) and the Gaia DR3 ID (SourceID).
+V = Vizier(columns=['Designation', 'SourceID', 'Teff', 'logg', 'Fe_H'], 
+           row_limit=-1) # row_limit=-1 retrieves all matching rows
+
+# 2. Convert ID list to a comma-separated string for VizieR's filter
+id_list_str = ','.join(target_gaia_dr3_ids)
+
+# 3. Filter the remote catalog by Gaia DR3 Source ID
+# 'SourceID' is the internal VizieR/Gaia column name for Gaia DR3 Source ID
+lamost_result = V.query_constraints(
+    catalog='J/ApJS/250/33/main', 
+    SourceID=id_list_str
+)
+
+# 4. Convert the result to a Pandas DataFrame
+if lamost_result:
+    # VizieR returns a list of tables; the main table is usually the first one
+    lamost_filtered_df = lamost_result[0].to_pandas()
+    # Rename columns for clarity (e.g., 'SourceID' is the Gaia DR3 ID)
+    lamost_filtered_df = lamost_filtered_df.rename(columns={'SourceID': 'gaia_dr3_id'})
+    print(f"✅ Downloaded and filtered LAMOST matches: {len(lamost_filtered_df)} rows.")
+else:
+    print("⚠️ No LAMOST matches found for the provided Gaia IDs.")
+
+
+==== data iport from gaia ====
+from astroquery.gaia import Gaia
+
+# 1. Prepare the ADQL query string
+# We select common stellar parameters from the main Gaia DR3 table (gaia_source)
+# and use an ADQL WHERE clause to check if the source_id is in our list.
+
+# Convert the ID list into a format safe for the ADQL 'IN' clause (a tuple string)
+id_tuple_str = "(" + ",".join(target_gaia_dr3_ids) + ")"
+
+adql_query = f"""
+    SELECT
+        source_id, ra, dec, phot_g_mean_mag, 
+        teff_gspspec, logg_gspspec, feh_gspspec 
+    FROM 
+        gaiadr3.gaia_source 
+    WHERE 
+        source_id IN {id_tuple_str}
+"""
+
+# 2. Submit the query to the Gaia server
+job = Gaia.launch_job_async(adql_query)
+
+# 3. Get the results and convert to Pandas DataFrame
+gaia_filtered_df = job.get_results().to_pandas()
+
+# Rename the key ID column for clean merging
+gaia_filtered_df = gaia_filtered_df.rename(columns={'source_id': 'gaia_dr3_id'})
+
+print(f"✅ Downloaded and filtered Gaia matches: {len(gaia_filtered_df)} rows.")
+
+
+
+
+from astroquery.vizier import Vizier
+import pandas as pd
+
+Vizier.ROW_LIMIT = -1
+catalog = "I/355/gaiadr3"
+
+all_results = []
+
+batch_size = 200
+for i in range(0, len(gaia_ids), batch_size):
+    batch = gaia_ids[i:i + batch_size]
+    query = " || ".join([f"source_id={sid}" for sid in batch])
+
+    r = Vizier.query_constraints(catalog=catalog, **{"source_id": batch})
+    if r:
+        all_results.append(r[0].to_pandas())
+
+gaia_dr3_df = pd.concat(all_results, ignore_index=True)
+
+
+
+
+def map_col_label_names_to_dict(
+    url,
+    col_map,
+    table_selector="table"
+):
+    """
+    Generic scraper for column-definition tables.
+
+    Parameters
+    ----------
+    url : str
+        URL of documentation page
+    col_map : dict
+        Mapping of logical field → cell index
+        Example:
+        {
+            "db_col": 0,
+            "label": 1,
+            "description": 2
+        }
+    table_selector : str
+        CSS selector for tables (default: 'table')
+    """
+
+    response = requests.get(url, timeout=10)
+    response.raise_for_status()
+
+    soup = BeautifulSoup(response.text, "html.parser")
+    column_defs = []
+
+    tables = soup.select(table_selector)
+
+    for table in tables:
+        rows = table.find_all("tr")
+
+        for row in rows:
+            cells = row.find_all(["td", "th"])
+
+            # ensure required indices exist
+            if len(cells) <= max(col_map.values()):
+                continue
+
+            db_col_name = cells[col_map["db_col"]].get_text(strip=True)
+            table_label = cells[col_map["label"]].get_text(strip=True)
+            description = cells[col_map["description"]].get_text(strip=True)
+
+            # skip headers
+            if db_col_name.lower() in {
+                "database column name",
+                "table label",
+                "description",
+                "column name"
+            }:
+                continue
+
+            # remove daggers / footnote markers
+            cleaned_db_col = re.sub(r"[†‡*]", "", db_col_name)
+            cleaned_db_col = re.sub(r"\s+", "", cleaned_db_col)
+
+            # normalise label
+            clean_label = table_label.lower()
+            clean_label = re.sub(r"[^a-z0-9_]+", "_", clean_label)
+            clean_label = re.sub(r"_+", "_", clean_label).strip("_")
+
+            column_defs.append({
+                "db_col_name": cleaned_db_col,
+                "label": clean_label,
+                "description": description
+            })
+
+    return column_defs
+
+
+sh_clean_gaiaid_fullid_list = stellar_host_merged_on_gaia_2['gaia_dr3_id'].astype(str).tolist()
+
+sh_clean_gaiaid_fullid_list[:3]
+
+
+sh_clean_gaiaid_num_list = stellar_host_merged_on_gaia_2['gaia_dr3_num'].astype(str).tolist()
+
+sh_clean_gaiaid_num_list [:3]
+
+
+print(stellar_host_psc_df.columns)
+print(stellar_host_merged_on_gaia_2.columns)
+
+
+stellar_host_merged_on_gaia_2 >> has 'gaia_dr3_num' = (4443, 31)

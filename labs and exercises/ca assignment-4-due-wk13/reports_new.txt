@@ -1,0 +1,289 @@
+
+
+conclusions
+
+time to analysse - not enough 
+datasets are live/workign and changing  - updates
+datasets ar huge
+domain knowledge  - good bti of time rampgin up on domain knowledge - may ahve amde mistakes on some decisions as a result
+inclusionof otehr data LAMST - from china >> intial analysis - not huge cross over - covers different part of the sky... so missing data not a complete set of all stars form all parts of the sky, mainly northern  / and western hemisphere...
+don[t have any tie based data to see fi theres anh changes over time ie.e stars gettig bigger/small/brighter/hotter/coler etc
+
+issues
+have different measurements from different datasets - don't ahve enojugh time to do proper - ciparisons and impute values fro those - btu thsi shodul be done across diffferent researcj programs for data validation
+
+
+
+
+data analysis
+
+>>>>1 >>> 1️⃣ Overall structure & scope (univariate: dataset-level)
+What to report
+
+Start by showing you understand what the dataset is.
+
+sh_psc_gaia_df.shape
+sh_psc_gaia_df.info()
+
+
+Discuss
+
+Number of stars (≈ 4,443)
+
+One row per star (Gaia DR3 source)
+
+Combination of:
+
+stellar physical parameters (Teff, mass, radius, logg, age…)
+
+planetary system summaries (number of planets, insolation flags)
+
+Gaia-derived astrophysical parameters
+
+📌 Expected: mixture of observational and derived quantities
+📌 Important: many columns will have missing values due to observational limits
+
+>>>2 >>>> 2️⃣ Missing data patterns (data quality)
+What to compute
+missing_frac = sh_psc_gaia_df.isna().mean().sort_values(ascending=False)
+missing_frac.head(15)
+
+
+(Optional visualisation)
+
+missing_frac.plot(kind="bar", figsize=(10,4))
+
+How to discuss
+
+Highlight high-missing columns, e.g.:
+
+st_rotp, st_vsin, age_flame
+
+Explain why this is expected:
+
+rotation periods → only measurable for active stars
+
+stellar ages → notoriously difficult
+
+spectroscopy-based quantities → observational bias
+
+📌 Key phrase:
+
+“Missingness is largely observational rather than random.”
+
+3️⃣ Stellar parameter distributions (univariate)
+
+Focus on physically meaningful core parameters.
+
+Effective temperature
+sh_psc_gaia_df["st_teff"].describe()
+
+
+Plot:
+
+sh_psc_gaia_df["st_teff"].plot(kind="hist", bins=40)
+
+
+Discuss
+
+Peak around 5000–6000 K
+
+Majority are FGK-type stars
+
+Few very hot (>7000 K) or very cool (<3500 K) stars
+
+📌 Expected: Exoplanet surveys target Sun-like stars
+
+Stellar mass & radius
+sh_psc_gaia_df["st_mass"].describe()
+sh_psc_gaia_df["st_rad"].describe()
+
+
+Plot:
+
+sh_psc_gaia_df.plot.scatter(x="st_mass", y="st_rad", alpha=0.5)
+
+
+Discuss
+
+Clear positive correlation
+
+Scatter reflects evolutionary state (main-sequence vs subgiants)
+
+Matches stellar structure theory
+
+📌 Expected result, reassuring sanity check
+
+4️⃣ Planetary system architecture (univariate)
+Number of planets per star
+sh_psc_gaia_df["n_planets"].value_counts().sort_index()
+
+
+Plot:
+
+sh_psc_gaia_df["n_planets"].value_counts().sort_index().plot(kind="bar")
+
+
+Discuss
+
+Majority of systems have 1 planet
+
+Very few systems with >5 planets
+
+Strong observational bias:
+
+easier to detect first planet
+
+multi-planet systems harder to fully characterise
+
+📌 Explicitly mention detection bias — examiners love this
+
+5️⃣ Earth-like insolation analysis (derived feature)
+Boolean flag
+sh_psc_gaia_df["psc_in_earth_range_insol"].value_counts(dropna=False)
+
+
+Discuss
+
+Only ~1–2% of stars host a planet receiving Earth-like flux
+
+Expected given:
+
+geometric transit probability
+
+survey sensitivity
+
+habitability zone constraints
+
+📌 Emphasise this is not a habitability claim, only radiative similarity
+
+6️⃣ Multivariate analysis (relationships)
+
+This is where you show depth.
+
+6.1 HR-diagram style analysis
+sh_psc_gaia_df.plot.scatter(
+    x="st_teff",
+    y="st_lum",
+    alpha=0.4
+)
+
+
+Discuss
+
+Main sequence clearly visible
+
+Some evolved stars (higher luminosity at same Teff)
+
+Gaia-derived luminosities behave physically
+
+📌 Strong validation of merged Gaia AP data
+
+6.2 Stellar mass vs number of planets
+sh_psc_gaia_df.boxplot(
+    column="st_mass",
+    by="n_planets",
+    figsize=(8,4)
+)
+
+
+Discuss
+
+No strong monotonic trend
+
+Slight hint that higher-mass stars host more detectable planets
+
+Likely dominated by observational bias rather than physics
+
+6.3 Metallicity vs planet occurrence
+sh_psc_gaia_df.plot.scatter(
+    x="st_met",
+    y="n_planets",
+    alpha=0.4
+)
+
+
+Or:
+
+sh_psc_gaia_df.groupby("n_planets")["st_met"].median()
+
+
+Discuss
+
+Stars with planets tend to have higher metallicity
+
+Matches known planet–metallicity correlation
+
+Particularly strong for gas giants
+
+📌 This is a textbook expected result
+
+7️⃣ Correlation matrix (summary multivariate view)
+numeric_cols = sh_psc_gaia_df.select_dtypes("number")
+corr = numeric_cols.corr()
+
+
+(Optional heatmap if allowed)
+
+Discuss
+
+Strong correlations:
+
+mass ↔ radius
+
+mass ↔ luminosity
+
+Weak correlations:
+
+age ↔ planets (expected)
+
+Confirms physical consistency of the dataset
+
+8️⃣ Explicit discussion of expected vs unexpected findings
+
+You must include this section in words.
+
+Expected
+
+Majority single-planet systems
+
+FGK stars dominate
+
+Mass–radius–luminosity correlations
+
+Metal-rich stars more likely to host planets
+
+Unexpected / noteworthy
+
+Very few Earth-flux planets
+
+Large uncertainty / missingness in stellar age
+
+Strong detection bias visible in architecture statistics
+
+📌 Phrase like:
+
+“These results are consistent with both stellar astrophysics and known exoplanet detection biases.”
+
+9️⃣ How to conclude this EDA section (important)
+
+End with something like:
+
+“This exploratory analysis confirms that the merged Gaia–PSC–stellar host dataset is physically consistent, observationally realistic, and suitable for further targeted analysis. The presence of known astrophysical correlations provides confidence in the data integration process, while the observed biases highlight important limitations that must be considered in subsequent modelling.”
+
+If you want next
+
+I can:
+
+help you write this as a polished report section
+
+suggest 2–3 focused hypotheses (perfect for grading)
+
+help you choose the strongest 3 plots only (often required)
+
+Just tell me the format (notebook / report / word count).
+
+
+
+
+ChatGPT can make mistakes.
